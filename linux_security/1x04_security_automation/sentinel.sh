@@ -45,6 +45,15 @@ check_ports() {
 	done
 }
 
+log() {
+	local component="$1"
+	local target="$2"
+	local status="$3"
+	local details="$4"
+	local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+	echo "{\"timestamp\": \"$timestamp\", \"component\": \"$component\",\"target\": \"$target\", \"status\": \"$status\", \"details\": \"$details\"}" >> /var/log/sentinel.log
+}
+
 check_ports
 check_integrity
 check_services
