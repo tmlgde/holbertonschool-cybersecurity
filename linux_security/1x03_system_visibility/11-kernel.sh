@@ -1,2 +1,2 @@
 #!/bin/bash
-grep segfault "$1" 2>/dev/null
+grep -h segfault /var/log/kern.log /var/log/messages 2>/dev/null
