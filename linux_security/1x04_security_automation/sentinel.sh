@@ -4,12 +4,12 @@
 check_services() {
 	for svc in "${SERVICES[@]}"; do
 		if pgrep -f "$svc" &>/dev/null; then
-			log "SERVICE" "OK: $svc is running"
+			echo  "OK: $svc is running"
 		else
 			if eval "$svc"; then
-				log "SERVICE" "FIXED: Restarted $svc"
+				echo "FIXED: Restarted $svc"
 			else
-				log "SERVICE" "ALERT: Failed to restart $svc"
+				echo  "ALERT: Failed to restart $svc"
 			fi
 		fi
 	done
@@ -21,10 +21,10 @@ check_integrity() {
 		golden="/var/backups/sentinel/$(basename "$file").gold"
 		golden_hash=$(md5sum $golden | awk '{print $1}')
 		if [ "$golden_hash" == "$live_hash" ]; then
-			log "INTEGRITY" "OK: $file integrity verified"
+			echo "OK: $file integrity verified"
 		else
 			cp "$golden" "$file"
-			log "INTEGRITY" "FIXED: Restored $file"
+			echo "FIXED: Restored $file"
 		fi
 	done
 }
@@ -38,9 +38,9 @@ check_ports() {
 			fi
 		done
 		if [ "$allowed" == false ]; then
-			pid=$(fuser $port/tcp 2>/dev/null | awk '{print $1}')
+			pid=$(losf -iTCP $port -sTCP:LISTEN | awk '{print $1}')
 			kill -9 $pid
-			log "PORT" "$port" "ALERT: Killed rogue process on port $port"
+			echo "ALERT: Killed rogue process on port $port"
 		fi
 	done
 }
