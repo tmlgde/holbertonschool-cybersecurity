@@ -29,5 +29,22 @@ check_integrity() {
 	done
 }
 
+check_ports() {
+	for port in ($ss -lnt4 | awk 'NR>1{split($4,a,":"); print a[2]'); do
+		allowed=false
+		for p in "$ALLOWED_PORTS[a]}"; do
+			if [ "$port" == "$p" ]; then
+				allowed=true
+			fi
+		done
+		if [ "$allowed" == false ]; then
+			pid=$(lsof -iTCP:$port -sTCP:LISTEN -n -p | awk 'NR==2{print $2}')
+			kill -9 $pid
+			echo "ALERT: Killed rogue process on port $port"
+		fi
+	done
+}
+
+check_ports
 check_integrity
 check_services
