@@ -32,7 +32,7 @@ check_integrity() {
 check_ports() {
 	for port in $(ss -lnt4 | awk 'NR>1{split($4,a,":"); print a[2]}'); do
 		allowed=false
-		for p in "${ALLOWED_PORTS[a]}"; do
+		for p in "${ALLOWED_PORTS[@]}"; do
 			if [ "$port" == "$p" ]; then
 				allowed=true
 			fi
