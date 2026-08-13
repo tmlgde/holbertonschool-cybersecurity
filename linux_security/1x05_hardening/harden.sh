@@ -21,3 +21,4 @@ source lib/system.sh
 
 configure_firewall_policy
 harden_kernel
+harden_ssh
