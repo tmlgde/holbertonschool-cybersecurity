@@ -38,7 +38,7 @@ check_ports() {
 			fi
 		done
 		if [ "$allowed" == false ]; then
-			pid=$(losf -iTCP:$port -sTCP\:LISTEN -n -P | awk '{print $1}')
+			pid=$(lsof -iTCP:$port -sTCP\:LISTEN -n -P | awk '{print $1}')
 			kill -9 $pid
 			log "PORT" "$port" "ALERT: Killed rogue process on port"
 		fi
@@ -50,7 +50,7 @@ log() {
 	local target="$2"
 	local status="$3"
 	local details="$4"
-	local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+	local timestamp=$(date -u +%FT%TZ)
 	echo "{\"timestamp\": \"$timestamp\", \"component\": \"$component\",\"target\": \"$target\", \"status\": \"$status\", \"details\": \"$details\"}" >> /var/log/sentinel.log
 }
 
