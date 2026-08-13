@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$EUID" -ne 0 ] then;
+if [ "$EUID" -ne 0 ]; then
 	echo "This script must be run as root. Exiting."
 	exit 1
 fi
@@ -18,3 +18,6 @@ source lib/network.sh
 source lib/ssh.sh
 source lib/identity.sh
 source lib/system.sh
+
+configure_firewall_policy
+harden_kernel
