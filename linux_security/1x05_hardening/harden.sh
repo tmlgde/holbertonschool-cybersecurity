@@ -22,3 +22,10 @@ source lib/system.sh
 configure_firewall_policy
 harden_kernel
 harden_ssh
+configure_password_policy
+configure_lockout
+cleanup_users
+lock_root
+update_system
+remove_bloatware
+intall_tools
