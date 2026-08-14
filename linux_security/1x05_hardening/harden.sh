@@ -28,4 +28,4 @@ cleanup_users
 lock_root
 update_system
 remove_bloatware
-intall_tools
+install_tools
