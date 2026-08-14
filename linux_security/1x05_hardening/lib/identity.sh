@@ -22,7 +22,7 @@ cleanup_users() {
 		if [ "$uid" -gt 1000 ] && [ "$uid" -lt 65534 ]; then
 			if ! groups "$username" | grep -qE "\b(sudo|wheel)\b"; then
 				userdel -r "$username"
-				REMOVED_USERS+=("$username)"
+				REMOVED_USERS+=("$username")
 				log "Removed unauthorized user : $username (UID $uid, not in sudo/wheel)"
 			fi
 		fi

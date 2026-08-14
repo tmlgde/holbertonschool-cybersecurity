@@ -14,7 +14,7 @@ generate_audit_report() {
 		[ "$ALLOW_HTTPS" == "yes" ] && PORTS="$PORTS, 443"
 		echo "[INFO] FIrewall policy created: ports $PORTS ALLOWED."
 		local USER_COUNT=${#REMOVED_USERS[@]}
-			if [ "$USER_COUNT" -gt 0]; then
+			if [ "$USER_COUNT" -gt 0 ]; then
 				local USER_LIST=$(IFS=", "; echo "${REMOVED_USERS[*]}")
 				echo "[INFO] $USER_COUNT unauthorized users removed: $USER_LIST."
 			else
