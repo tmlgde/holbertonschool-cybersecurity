@@ -10,6 +10,9 @@ log () {
 	echo "$(date '+%Y-%m-%d %H:%M:%S') - $message" >> /var/log/hardening.log
 }
 
+REMOVED_USERS=()
+WARNINGS=()
+UPGRADED_COUNT=0
 source config/harden.cfg
 
 log "Hardening framework initialized"
@@ -18,6 +21,7 @@ source lib/network.sh
 source lib/ssh.sh
 source lib/identity.sh
 source lib/system.sh
+source lib/audit.sh
 
 configure_firewall_policy
 harden_kernel
@@ -29,3 +33,4 @@ lock_root
 update_system
 remove_bloatware
 install_tools
+generate_audit_report

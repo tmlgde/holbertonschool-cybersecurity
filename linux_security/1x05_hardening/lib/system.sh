@@ -2,8 +2,10 @@
 
 update_system() {
 	export DEBIAN_FRONTEND=noninteractive #dit au systeme n'affiche aucun popups, prend toujours la reponse par defaut automatiquement"
+	UPGRADED_COUNT=$(apt-get upgrade -y -qq -s | grep -c "^Inst ")
 	apt-get update -qq # -qq pour tres silencieux, aucn affichage 
 	apt-get upgrade -y -qq
+	[ "$UPGRADED_COUNT" -eq 0 ] && WARNINGS+=("Package updates skipped (already up to date)")
 	log "System updated: repositories refreshed and packages upgraded"
 }
 
