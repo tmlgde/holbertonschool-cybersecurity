@@ -8,7 +8,7 @@ update_system() {
 }
 
 remove_bloatware() {
-	apt-get purge -y -qq telnet ftp netcat-traditional
+	apt-get purge -y -qq telnet ftp netcat-traditional inetutils-telnet tnftp
 	log "Bloatware removed: telnet, ftp, netcat-traditional purged"
 }
 
