@@ -4,12 +4,12 @@
 check_services() {
 	for svc in "${SERVICES[@]}"; do
 		if pgrep -f "$svc" &>/dev/null; then
-			echo "OK: $svc is running"
+			log "SERVICE" "$svc" "OK: $svc is running"
 		else
 			if eval "$svc"; then
-				echo "FIXED: Restarted $svc"
+				log "SERVICE" "$svc" "FIXED: Restarted"
 			else
-				echo "ERROR: Failed to restart $svc"
+				log "SERVICE" "$svc"  "ALERT: Failed to restart $svc"
 			fi
 		fi
 	done
@@ -21,10 +21,10 @@ check_integrity() {
 		golden="/var/backups/sentinel/$(basename "$file").gold"
 		golden_hash=$(md5sum $golden | awk '{print $1}')
 		if [ "$golden_hash" == "$live_hash" ]; then
-			echo "OK: $file integrity verified"
+			log "INTEGRITY" "$file" "OK: Integrity verified"
 		else
 			cp "$golden" "$file"
-			echo "FIXED: Restored $file"
+			log "INTEGRITY" "$file" "FIXED: Restored file"
 		fi
 	done
 }
@@ -39,11 +39,20 @@ check_ports() {
 		if [ "$allowed" == false ]; then
 			pid=$(lsof -iTCP:$port -sCTP:LISTEN -n -p | awk 'NR==2{print $2}')
 			kill -9 $pid
-			echo "ALERT: Killed rogue process on port $port"
+			log "PORT" "$port" "ALERT: Killed rogue process on port"
 		fi
 	done
 }
 
+log() {
+	local component="$1"
+	local target="$2"
+	local status="$3"
+	local details="$4"
+	local timestamp=$(date -u +%FT%TZ)
+	echo "{\"timestamp\": \"$timestamp\", \"component\": \"$component\",\"target\": \"$target\", \"status\": \"$status\", \"details\": \"$details\"}" >> /var/log/sentinel.log
+}
+
+check_ports
 check_integrity
 check_services
-check_ports
