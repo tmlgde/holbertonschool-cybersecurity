@@ -1,111 +1,192 @@
-🛡️ Holberton Cybersecurity — Comment fonctionne ce programme
-No tutorials. Real scenarios. Progressive complexity.
+# 🛡️ Holberton Cybersecurity
 
+> **Pas de tutoriels. De vrais scénarios. Une complexité progressive.**
 
-📑 Sommaire
-🎯 La philosophie pédagogique
-⚙️ Le déroulement du travail
-✅ La validation
-⏰ Les deadlines
-🧑‍🏫 L'équipe pédagogique
-⚖️ La dimension éthique
-💻 Ton environnement local
+Ce programme est conçu pour apprendre la cybersécurité en pratiquant sur des situations proches de celles rencontrées dans le monde professionnel.
 
+---
 
-🎯 La philosophie pédagogique
-Principe
-Ce que ça veut dire
-🚫 Pas de tutoriels
-Tu ne trouveras pas d'instructions pas-à-pas. Juste des objectifs, des contraintes, des ressources, et une deadline. Le "comment", c'est à toi de le trouver.
-🌍 Scénarios réels
-Chaque projet reflète une vraie situation de sécurité — pas un exercice académique.
-📈 Complexité progressive
-Tâches → projets → modules → trimestres : tout s'empile, rien n'est isolé.
-🧠 Révision & réflexion
-La plupart des projets se terminent par des questions ouvertes, pour valider que tu as compris le pourquoi, pas juste le comment.
+## 📑 Sommaire
 
+* 🎯 [Philosophie pédagogique](#-philosophie-pédagogique)
+* ⚙️ [Déroulement du travail](#️-déroulement-du-travail)
+* ✅ [Validation](#-validation)
+* ⏰ [Deadlines](#-deadlines)
+* 🧑‍🏫 [Équipe pédagogique](#-équipe-pédagogique)
+* ⚖️ [Éthique](#️-éthique)
+* 💻 [Environnement local](#-environnement-local)
 
+---
 
-⚙️ Le déroulement du travail
-Ta méthode de travail dépend de ce que tu apprends.
-🖥️ Tâches scriptées (principalement T1)
-1. ✍️  Écris le script en local
+## 🎯 Philosophie pédagogique
 
-2. 📤  Transfère-le vers la cible (SCP)
+| Principe                      | Ce que cela signifie                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 🚫 **Pas de tutoriels**       | Des objectifs, contraintes et ressources sont fournis. La méthode est à trouver soi-même.                 |
+| 🌍 **Scénarios réels**        | Les projets reproduisent des situations rencontrées en cybersécurité.                                     |
+| 📈 **Complexité progressive** | Les compétences s'accumulent au fil des tâches, projets et modules.                                       |
+| 🧠 **Réflexion**              | Les questions ouvertes permettent de vérifier la compréhension du *pourquoi*, pas seulement du *comment*. |
 
-3. 🔐  Exécute-le à distance (SSH)
+> **L'objectif n'est pas de suivre une recette, mais d'apprendre à résoudre un problème.**
 
-4. 🚩  Récupère le flag qui prouve la réussite
+---
 
-5. ⬆️  Commit sur GitHub pour validation
+## ⚙️ Déroulement du travail
 
-Reflète le vrai travail d'un professionnel de l'infra : automatisation plutôt qu'intervention manuelle.
-📦 Engagements en boîte noire (T2 & T3)
-❌ Aucun indice sur ce qui est vulnérable
-🔍 Énumère, analyse, trouve ton propre chemin d'attaque
-💥 Exploite la vulnérabilité pour capturer le flag
-📊 Complexité croissante à mesure que tes compétences progressent
+La méthode dépend du type de projet.
 
-Reflète un vrai test d'intrusion : personne ne te dit où chercher.
-💬 Projets conceptuels
-Scénarios demandant du jugement
-Questions ouvertes demandant des explications
-Quiz validant la compréhension avant la pratique
+### 🖥️ Tâches scriptées
 
-La sécurité n'est pas que technique — le risque, la politique interne, la communication comptent aussi.
+Principalement utilisées dans les premiers modules.
 
+```text
+✍️ Écrire le script en local
+        ↓
+📤 Transférer avec SCP
+        ↓
+🔐 Exécuter avec SSH
+        ↓
+🚩 Récupérer le flag
+        ↓
+⬆️ Soumettre sur GitHub
+```
 
-✅ La validation
-Élément
-Ce qu'il prouve
-🚩 Flags
-Compétence technique — des hash uniques, impossibles à falsifier ou copier
-📝 Tâches de révision
-Compréhension conceptuelle — expliquer avec tes propres mots
-⬆️ Soumissions GitHub
-Scripts + flags + réponses écrites, validés par des checkers automatisés
+Cette méthode reproduit un workflow professionnel basé sur l'automatisation et le travail à distance.
 
+### 📦 Engagements en boîte noire
 
+Pour les projets plus avancés :
 
-⏰ Les deadlines
-⏱️ Moment de soumission
-🎯 Score plafonné à
-Avant la deadline
-100%
-Après la deadline
-65%
+* ❌ Aucun indice sur la vulnérabilité
+* 🔍 Énumération et analyse
+* 🧠 Recherche de sa propre méthode
+* 💥 Exploitation de la vulnérabilité
+* 🚩 Capture du flag
+* 📈 Difficulté croissante
 
+> **Comme lors d'un véritable pentest : personne ne te dit où chercher.**
 
-Les projets restent accessibles pour continuer à apprendre, mais ton score reflète ta discipline professionnelle. Les deadlines existent dans le monde réel — habitue-toi à ça. ⏳
+### 💬 Projets conceptuels
 
+Certains projets demandent également :
 
-🧑‍🏫 L'équipe pédagogique
-Les SWE (Software Engineers) sont là pour guider, pas pour donner les réponses. Ils poseront des questions qui t'orientent vers la solution — ils ne taperont jamais les commandes à ta place.
+* Du raisonnement
+* Des décisions techniques
+* Des explications détaillées
+* Des réponses à des questions ouvertes
+* Une compréhension des enjeux liés au risque et aux politiques de sécurité
 
-C'est volontaire : ça reflète la façon dont un collègue senior fonctionne en entreprise.
+---
 
+## ✅ Validation
 
-⚖️ La dimension éthique
-⚠️ Les compétences enseignées ici peuvent causer de vrais dommages si elles sont mal utilisées. Ce n'est pas théorique — on va en prison pour un accès non autorisé à un système informatique.
+| Élément                      | Objectif                                                           |
+| ---------------------------- | ------------------------------------------------------------------ |
+| 🚩 **Flags**                 | Prouver la réussite technique grâce à des valeurs uniques.         |
+| 📝 **Questions de révision** | Vérifier la compréhension et la capacité à expliquer les concepts. |
+| ⬆️ **GitHub**                | Soumettre scripts, flags et réponses pour validation automatisée.  |
 
-Autorisé ✅
+---
 
-Les labs fournis par le programme
-Les systèmes que tu possèdes
-Les systèmes avec permission écrite explicite
+## ⏰ Deadlines
 
-Interdit ❌
+| Moment de soumission | Score maximum |
+| -------------------- | ------------: |
+| ✅ Avant la deadline  |     **100 %** |
+| ⏰ Après la deadline  |      **65 %** |
 
-Tout le reste
+Les projets restent accessibles après la deadline afin de continuer à apprendre.
 
-🔴 Toute violation entraîne un renvoi immédiat du programme — non négociable.
+Cependant, les délais font partie du monde professionnel :
 
-L'industrie de la cybersécurité repose sur la confiance : les employeurs doivent savoir que tu ne compromettras pas leurs clients, les clients doivent savoir que tu ne dépasseras pas le cadre de la mission. Cette confiance commence ici.
+> **La technique compte, mais la discipline aussi.**
 
+---
 
-💻 Ton environnement local
-Avant de te connecter aux labs distants, il te faut un environnement local adapté. Les outils de sécurité sont conçus pour Linux — l'industrie tourne dessus. Ta configuration locale doit refléter cette réalité.
-🐧 Pourquoi Linux ?
-Les outils du programme — Nmap, Wireshark, Burp Suite, Metasploit, scripts personnalisés — sont conçus pour Linux en premier. Certains n'existent pas sur Windows, d'autres fonctionnent mal sous macOS. Linux élimine les problèmes de compatibilité et t'apprend l'environnement que tu utiliseras professionnellement.
+## 🧑‍🏫 Équipe pédagogique
 
-Au-delà des outils : Linux donne un accès direct aux primitives réseau, aux opérations noyau, et aux mécanismes internes du système que Windows masque. Analyser du trafic réseau ou déboguer un exploit demande cet accès.
+Les **SWE (Software Engineers)** sont là pour accompagner et orienter, pas pour fournir directement les réponses.
+
+Ils peuvent :
+
+* Poser des questions
+* Orienter vers une piste
+* Aider à comprendre un problème
+* Encourager une meilleure méthode de résolution
+
+Mais ils ne feront pas le travail à ta place.
+
+> **Le but est de développer ton autonomie, comme avec un collègue senior en entreprise.**
+
+---
+
+## ⚖️ Éthique et responsabilité
+
+Les compétences enseignées dans ce programme peuvent avoir un impact réel.
+
+La cybersécurité implique donc une règle fondamentale :
+
+> 🔴 **Ne jamais accéder ou attaquer un système sans autorisation.**
+
+### ✅ Autorisé
+
+* Les labs fournis par le programme
+* Les systèmes que tu possèdes
+* Les systèmes pour lesquels tu disposes d'une autorisation explicite
+
+### ❌ Interdit
+
+* Tout système ou environnement ne faisant pas partie du périmètre autorisé
+
+Toute utilisation abusive des compétences acquises peut avoir des conséquences légales et professionnelles graves.
+
+> **La confiance est une compétence essentielle en cybersécurité.**
+
+---
+
+## 💻 Environnement local
+
+Avant de travailler sur les labs distants, il est recommandé de disposer d'un environnement Linux correctement configuré.
+
+### 🐧 Pourquoi Linux ?
+
+De nombreux outils utilisés en cybersécurité sont conçus principalement pour Linux :
+
+* `Nmap`
+* `Wireshark`
+* `Burp Suite`
+* `Metasploit`
+* Scripts Bash et Python
+* Outils réseau et forensic
+
+Linux permet également de mieux comprendre :
+
+* Les primitives réseau
+* Les processus système
+* Les permissions
+* Le fonctionnement du noyau
+* Les mécanismes internes du système
+
+C'est donc à la fois un **environnement de travail** et un élément essentiel de la formation.
+
+---
+
+## 🚀 En résumé
+
+```text
+Objectifs
+   ↓
+Recherche personnelle
+   ↓
+Expérimentation
+   ↓
+Résolution
+   ↓
+Validation
+   ↓
+Réflexion
+   ↓
+Compétences professionnelles
+```
+
+> 🛡️ **Learn by doing. Think independently. Work ethically.**

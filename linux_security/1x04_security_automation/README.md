@@ -8,7 +8,247 @@
 📂 Contexte : "The Unstable Server"
 🎯 Objectifs pédagogiques
 📚 Ressources
+📋 Exigences🤖 Sentinel — Self-Healing Infrastructure Agent
+
+« Stability is not a state, it is a process. »
+
+Projet pratique consacré à l'automatisation, au contrôle de configuration et à l'auto-remédiation Linux.
+
+L'objectif : construire Sentinel, un agent Bash capable de détecter les dérives d'un système, de les corriger automatiquement et de fonctionner de manière persistante via systemd.
+
+📑 Sommaire
+🧭 Introduction
+❓ Pourquoi c'est important
+📂 Contexte — The Unstable Server
+🎯 Objectifs
+🛠️ Technologies
 📋 Exigences
+🔄 Workflow
+🧭 Introduction
+
+Dans les projets précédents, les problèmes étaient corrigés manuellement.
+
+Mais dans une infrastructure réelle, les configurations dérivent, les services tombent et les erreurs humaines se répètent.
+
+Sentinel automatise ce processus :
+
+🔍 Audit
+   ↓
+📊 Détection de dérive
+   ↓
+🛠️ Remédiation
+   ↓
+📝 Logging
+   ↓
+🔄 Vérification
+
+L'agent doit maintenir le système dans un état désiré défini par sa configuration.
+
+❓ Pourquoi c'est important ?
+
+La remédiation manuelle est :
+
+🐌 Lente
+🔁 Répétitive
+⚠️ Sujette aux erreurs
+🌙 Difficile à maintenir à grande échelle
+
+L'automatisation permet au contraire de mettre en place des baselines de sécurité et de corriger automatiquement les dérives.
+
+Ces principes sont directement liés à l'Infrastructure as Code, à la gestion de configuration et aux solutions de sécurité comme les EDR ou les systèmes de monitoring.
+
+📂 Contexte — The Unstable Server
+
+De : Responsable Ops — ACME Corp
+À : Security Engineer
+Sujet : 🚨 Instabilité du serveur de production
+Priorité : Haute
+
+Le serveur srv-prod-01 présente plusieurs problèmes :
+
+Problème	Description
+💥 Service instable	Le serveur web crash régulièrement
+🔓 Configuration SSH	/etc/ssh/sshd_config est régulièrement modifié
+👻 Processus inconnus	Des processus apparaissent sur des ports inhabituels
+
+L'équipe Ops souhaite éviter les interventions manuelles répétitives.
+
+🎯 Mission
+
+Développer et déployer sentinel.sh, un agent capable de :
+
+🔍 Surveiller les services et fichiers critiques
+🛠️ Corriger automatiquement les écarts
+📊 Produire des logs structurés en JSON
+⏱️ Fonctionner automatiquement en arrière-plan
+🔄 Survivre aux redémarrages grâce à systemd
+🎯 Objectifs
+🏗️ Architecture Bash
+
+Comprendre :
+
+Le découpage en fonctions
+La séparation code / configuration
+Les codes de sortie
+La conception modulaire
+🔄 Idempotence
+
+Le script doit pouvoir être exécuté plusieurs fois sans provoquer d'effets indésirables.
+
+État incorrect
+      ↓
+   Sentinel
+      ↓
+État correct
+      ↓
+Sentinel à nouveau
+      ↓
+Aucune modification inutile
+⚙️ Gestion de configuration
+
+Utiliser une configuration externe pour définir notamment :
+
+Les services à surveiller
+Les fichiers critiques
+Les ports
+Les valeurs attendues
+
+🚫 Les valeurs importantes ne doivent pas être codées en dur dans le script.
+
+🔧 Systemd
+
+Comprendre :
+
+Les service units
+Les timer units
+Les dépendances
+La gestion des logs
+La différence avec une simple tâche cron
+📊 Logging structuré
+
+Sentinel doit produire des événements exploitables par des outils de monitoring ou un SIEM :
+
+{
+  "timestamp": "...",
+  "level": "INFO",
+  "action": "check",
+  "status": "ok"
+}
+🛠️ Technologies
+
+Principaux composants :
+
+🐚 Bash
+⚙️ systemd
+⏱️ systemd timers
+🔐 md5sum
+📝 JSON
+📊 logger
+
+Pages de manuel utiles :
+
+man systemctl
+man systemd.unit
+man systemd.timer
+man md5sum
+man logger
+📋 Exigences
+🌐 Général
+
+Le projet doit fonctionner sur :
+
+Kali Linux
+ParrotOS
+Ubuntu 22.04+
+
+Éditeurs autorisés :
+
+vi
+vim
+emacs
+nano
+
+Un README.md doit être présent à la racine.
+
+📜 Bash
+
+Tous les scripts doivent :
+
+Être exécutables avec chmod +x
+Commencer exactement par :
+#!/bin/bash
+Contenir exactement 2 lignes
+Se terminer par une nouvelle ligne
+Produire une sortie propre
+Utiliser les pipes et opérateurs logiques lorsque nécessaire
+
+Vérification :
+
+wc -l fichier
+
+Résultat attendu :
+
+2
+🚨 Contraintes critiques
+🔄 Idempotence
+
+Relancer Sentinel ne doit jamais casser le système ni effectuer de modifications inutiles.
+
+🔐 Privilèges
+
+L'agent est exécuté avec les privilèges root via systemd.
+
+⚙️ Configuration externe
+
+Les éléments tels que :
+
+Services
+Chemins
+Ports
+Fichiers de référence
+
+doivent provenir du fichier de configuration et non être directement codés dans le script.
+
+🔄 Workflow
+💻 Développement local
+        ↓
+🧪 Tests
+        ↓
+📤 SCP
+        ↓
+🖥️ Machine cible
+        ↓
+🔐 SSH
+        ↓
+⚙️ Installation systemd
+        ↓
+🤖 Sentinel
+        ↓
+🔍 Audit → 🛠️ Remédiation → 📊 JSON
+
+Les scripts doivent être développés localement, transférés via scp, puis exécutés sur la cible avec :
+
+ssh <user>@<host>
+🎓 Résultat attendu
+
+À la fin du projet, Sentinel doit être capable de maintenir automatiquement une baseline système :
+
+        🤖 SENTINEL
+             │
+     ┌───────┴───────┐
+     ↓               ↓
+   🔍 Audit       📊 Logs
+     │
+     ↓
+⚠️ Dérive détectée
+     │
+     ↓
+🛠️ Remédiation
+     │
+     ↓
+✅ État désiré
+
+🤖 Stability is not a state, it is a process.
 
 
 🧭 Introduction
