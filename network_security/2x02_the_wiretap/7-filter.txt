@@ -1,1 +1,1 @@
-tcp.stream == 4
+tcp.stream == 4 and tcp.flags.syn == 1 and tcp.flags.ack == 0
