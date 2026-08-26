@@ -1,0 +1,1 @@
+ftp.request.command == "USER" or ftp.request.command == "PASS"
