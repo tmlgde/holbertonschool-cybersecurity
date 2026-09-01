@@ -1,2 +1,2 @@
 #!/bin/bash
-tshark -e
+tshark -r incident.pcap -T fields -e ip.src | sort | uniq -c | sort -rn
