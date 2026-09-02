@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo nft flush ruleset && sudo nft add table inet filter && sudo nft add chain inet filter input { type filter hook input priority 0 \; policy accept \; } && sudo nft add chain inet filter forward { type filter hook forward priority 0 \; policy accept \; } && sudo nft add chain inet filter output { type filter hook output priority 0 \; policy accept \; } && echo "$(readlink -f "$0")" | at now + 5 minutes
