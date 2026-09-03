@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo wg show
+sudo wg show | grep handshake
