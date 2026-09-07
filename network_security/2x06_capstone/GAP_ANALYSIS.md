@@ -1,1 +1,1 @@
-gap analys
+LogiCorp présente une faille de sécurité qui permet a n'importe quel appareil connecté au réseau, y compris depuis le Wi-Fi invité, d'atteindre la base de données, car aucune séparation n'existe. Nous allons donc réorganiser l'architecture réseau afin de séparer les différentes activités (Wi-Fi invité, poste Finance, base de données), pour permettre à LogiCorp de regagner la confiance de ses investisseurs.
