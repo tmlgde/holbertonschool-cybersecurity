@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $EUID -ne 0 ]; then
+if [ $EUID -ne 0 ]; then
 	echo "This script must be run as root."
 	exit 1
 fi
@@ -8,8 +8,9 @@ fi
 sysctl -w net.ipv4.ip_forward=1
 
 
-#Activer le language nft, puis création des blocs firewall
+#Activer le language nft, puis creation des blocs firewall
 cat > /etc/nftables.conf <<'NFT'
+flush ruleset
 table inet filter {
 	chain input {
 		type filter hook input priority 0;
