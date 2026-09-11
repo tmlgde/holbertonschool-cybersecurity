@@ -36,6 +36,12 @@ grep -q "PermitRootLogin no" /etc/ssh/sshd_config
 check "RootLogin is NO" $?
 grep -q "PasswordAuthentication no" /etc/ssh/sshd_config
 check "PasswordAuthentication is NO" $?
+grep -q "PubkeyAuthentication yes" /etc/ssh/sshd_config
+check "PubkeyAuthentication is YES" $?
+ip a show eth0 | grep -q "state UP"
+check "WAN interface is UP" $?
+ip route | grep -q "default via .* dev eth0"
+check "Default route via WAN interface" $?
 wg show | grep -q "interface: wg0"
 check "VPN is RUNNING" $?
 ! ss -tln | grep ":23 "
