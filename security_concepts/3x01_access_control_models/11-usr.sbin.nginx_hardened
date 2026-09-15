@@ -1,0 +1,11 @@
+/usr/sbin/nginx {
+/usr/sbin/nginx mr,
+/etc/nginx/** r,
+/usr/share/nginx/html/** r,
+/var/log/nginx/** w,
+/opt/securehealth/plugin.conf r,
+/opt/securehealth/data/** r,
+network inet stream,
+network inet dgram,
+}
+
