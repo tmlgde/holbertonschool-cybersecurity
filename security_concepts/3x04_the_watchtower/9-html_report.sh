@@ -1,6 +1,5 @@
 #!/bin/bash
-TRI=$(awk '$9 == 404 || $9 == 403 { print $1}' "$1" | sort | uniq -c | sort -nr |head -5)
-
+TRI=$(grep "Failed password" "$1" | awk '{print $(NF-3)}' | sort | uniq -c | sort -nr | head -5)
 cat << EOF > "$2"
 <html><body>
 <h1>Security Report</h1>
