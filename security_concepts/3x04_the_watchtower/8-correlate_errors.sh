@@ -1,7 +1,7 @@
 #!/bin/bash
-awk '$8 == 404 || $8 == 403 { compteur[$1]++ } END {
-	for (ip in compteur)
-		if (compteur[ip] > 5) {
-			print "ALERT: IP "ip" is scanning us!"
-		}
-}' "$1"
+awk '$9 == 404 || $9 == 403 { print $1}' "$1" | sort | uniq -c | while read count ip; 
+	do
+		if [ "$count" -gt 5 ]; then
+			echo "ALERT: IP $ip is scanning us!"
+		fi
+	done
