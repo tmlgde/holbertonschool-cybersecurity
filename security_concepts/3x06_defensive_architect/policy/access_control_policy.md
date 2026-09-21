@@ -2,7 +2,7 @@
 
 **Date:** 21 septembre 2026
 **Auteur:** CISO par intérim
-**Objectif:** Définir les règles d'engagement numérique pour remplacer la pratique de la clé SSH partagée (`nexus_master.pem`) par un modèle individuel, sans ralentir l'équipe de développement. Ce document est rédigé pour être directement implémentable par script (voir `technical/`).
+**Objectif:** Définir les règles d'engagement numérique pour remplacer la pratique de la clé SSH partagée (`nexus_master.pem`) par un modèle individuel, sans ralentir l'équipe de développement — y compris l'équipe frontend distante basée à Bali. Ce document est rédigé pour être directement implémentable par script (voir `technical/`).
 
 ## 1. Authentication
 
@@ -29,9 +29,17 @@ Aucun utilisateur n'appartient par défaut à `prod-admins` : l'ajout à ce grou
 - Aucune connexion SSH directe depuis Internet vers un serveur interne n'est autorisée.
 - L'ensemble du trafic SSH transite obligatoirement par un **bastion host** unique et durci, seul point d'entrée exposé.
 - Les serveurs internes n'acceptent de connexions SSH **que** depuis l'adresse IP du bastion — toute autre source est bloquée au niveau du pare-feu/security group.
-- Le même principe s'applique à la base de données : aucun accès direct depuis `0.0.0.0/0`, uniquement depuis le réseau interne ou via le bastion.
-- Le bastion lui-même applique l'intégralité des règles d'Authentication ci-dessus (clé individuelle, pas de mot de passe, MFA pour tout accès menant à la prod).
+- La base de données Postgres n'est **jamais** exposée directement à Internet (`0.0.0.0/0` interdit en toute circonstance), y compris pour répondre à des besoins de performance.
+
+### Cas particulier : équipe distante (Bali)
+
+L'ouverture du port 5432 au monde entier était une réponse à un problème réel — la latence du VPN pour l'équipe frontend basée à Bali — mais ce n'est pas une solution acceptable. La cause racine (distance réseau) est traitée directement plutôt que contournée :
+
+- Une **réplique Postgres en lecture seule** est déployée dans une région proche de l'équipe Bali (Asie du Sud-Est), synchronisée en continu depuis la base primaire.
+- L'équipe frontend, dont le besoin est exclusivement de la **lecture** de données, interroge cette réplique localement — latence réduite, sans jamais exposer la base primaire.
+- La réplique reste soumise aux mêmes règles d'accès que la base primaire : jamais accessible depuis `0.0.0.0/0`, uniquement via réseau privé/VPN.
+- Tout besoin d'écriture exceptionnel depuis Bali (ex. un admin) passe par le bastion host classique, pas par la réplique.
 
 ## Synthèse
 
-Ce modèle répond simultanément aux deux contraintes exprimées : il **simplifie** la gestion des accès pour Dave (onboarding/offboarding en une seule action, point d'entrée unique à administrer) tout en **réduisant drastiquement la surface d'attaque** pour Sarah (accountability individuelle, MFA ciblé sur ce qui compte, aucun accès direct aux serveurs internes depuis l'extérieur).
+Ce modèle répond simultanément aux contraintes exprimées : il **simplifie** la gestion des accès pour Dave (onboarding/offboarding en une seule action, point d'entrée unique à administrer, performance correcte pour l'équipe distante) tout en **réduisant drastiquement la surface d'attaque** pour Sarah (accountability individuelle, MFA ciblé sur ce qui compte, aucun accès direct aux serveurs ou à la base depuis l'extérieur, quelle que soit la justification opérationnelle invoquée).
