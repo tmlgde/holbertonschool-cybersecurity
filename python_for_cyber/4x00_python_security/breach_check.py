@@ -27,6 +27,15 @@ def read_file(filename: str) -> list:
 
 def clean_data(lines: list) -> list:
     """Nettoyer le fichier avant la recuperation"""
+    cleaned = []
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stipped.startwith("#"):
+            continue
+        cleaned.append(stripeed)
+    return cleaned
 
 if __name__ == "__main__":
     main()
