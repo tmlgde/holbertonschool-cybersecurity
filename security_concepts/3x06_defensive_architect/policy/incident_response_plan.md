@@ -20,11 +20,24 @@ Un événement isolé n'est pas une alerte. Le signal devient significatif lorsq
 
 ## 2. Containment
 
-Objectif : limiter les dégâts sans détruire les preuves.
+## 2. Containment
 
-- **Ne jamais éteindre le serveur.** Couper l'alimentation détruit les preuves volatiles (mémoire, connexions actives) qui seraient nécessaires à l'investigation.
-- Utiliser **UFW** (`network_defense.sh`) pour bloquer immédiatement tout accès entrant sur le port de la base de données, y compris depuis l'IP du serveur web habituellement autorisée, le temps de l'investigation.
-- Si un compte utilisateur précis est suspecté d'être compromis, le désactiver immédiatement (`usermod -L <utilisateur>` ou suppression via les outils de `rbac_setup.sh`), sans attendre la fin de l'investigation.
+Objectif : limiter les dégâts sans détruire les preuves. On distingue le containment **immédiat** (à faire dans les premières minutes) du containment **à plus long terme** (le temps que l'investigation se poursuive) — ne pas confondre avec l'Eradication (phase 3), qui vient après, une fois la cause racine confirmée.
+
+### Containment immédiat (court terme)
+
+- **Ne jamais éteindre le serveur.** Couper l'alimentation détruit les preuves volatiles (mémoire, connexions actives) nécessaires à l'investigation.
+- **Préserver une preuve avant toute autre action** : effectuer un instantané disque/mémoire du serveur affecté (snapshot de la VM, ou `dd` du disque vers un stockage externe) avant de modifier quoi que ce soit d'autre sur la machine — c'est la seule copie fidèle de l'état au moment de l'intrusion.
+- Si l'IP source de l'attaquant est identifiable dans les logs, la bloquer explicitement via UFW (`ufw deny from <IP_ATTAQUANT>`), en plus du blocage général du port DB.
+- Utiliser UFW (`network_defense.sh`) pour bloquer immédiatement tout accès entrant sur le port de la base de données, y compris depuis l'IP du serveur web habituellement autorisée, le temps de l'investigation.
+- Si un compte utilisateur précis est suspecté d'être compromis, le désactiver immédiatement (`usermod -L <utilisateur>`), sans attendre la fin de l'investigation.
+
+### Containment étendu (le temps de l'investigation)
+
+- **Isoler le système affecté du reste du réseau** : au-delà du simple blocage du port DB, retirer l'hôte compromis de son segment réseau habituel (le placer dans un VLAN/groupe de sécurité de quarantaine dédié), pour empêcher tout mouvement latéral vers d'autres serveurs pendant que l'investigation se poursuit.
+- **Révoquer les identifiants compromis** : au-delà de la désactivation du compte suspect, révoquer spécifiquement les identifiants de la base de données elle-même (changer le mot de passe des utilisateurs Postgres concernés), et toute clé SSH ou token d'API potentiellement exposé — pas seulement le compte système Linux.
+
+Ces actions de containment sont temporaires par nature : elles limitent la casse pendant l'investigation, mais ne corrigent pas la cause racine — c'est le rôle de la phase Eradication qui suit.
 
 ## 3. Eradication
 
