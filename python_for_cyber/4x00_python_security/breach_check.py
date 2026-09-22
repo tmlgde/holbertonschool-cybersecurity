@@ -25,6 +25,8 @@ def read_file(filename: str) -> list:
         print(f"[ERROR] Permission denied: {filename}", file=sys.stderr)
         sys.exit(1)
 
+def clean_data(lines: list) -> list:
+    """Nettoyer le fichier avant la recuperation"""
 
 if __name__ == "__main__":
     main()
