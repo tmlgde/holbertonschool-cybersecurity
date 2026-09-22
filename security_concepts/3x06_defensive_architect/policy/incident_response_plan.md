@@ -110,4 +110,17 @@ Rédiger un rapport d'incident structuré comme action de clôture formelle (pas
 ### Mise à jour des politiques et procédures
 
 - Le `threat_model.md` doit être mis à jour si l'incident a révélé un acteur, un vecteur, ou une menace non anticipée dans l'analyse STRIDE initiale.
-- Toute autre politique concernée par l'incident
+- Toute autre politique concernée par l'incident (`access_control_policy.md`, `physical_security_plan.md`) doit être révisée en conséquence, pas seulement le threat model.
+- Ce présent document (`incident_response_plan.md`) doit lui-même être mis à jour si la réponse réelle à l'incident a révélé une étape manquante ou mal adaptée dans ce playbook.
+
+### Amélioration des capacités de détection
+
+Si l'incident a mis du temps à être détecté, ou si le signal était présent dans les logs mais pas assez visible, ajuster explicitement les règles `auditd` (`logging_setup.sh`) et les seuils d'alerte pour détecter ce type d'événement plus rapidement à l'avenir.
+
+### Mise à jour des formations
+
+Si l'incident révèle une lacune de sensibilisation (par exemple, un comportement humain ayant facilité l'intrusion), intégrer ce cas concret — anonymisé si nécessaire — dans la prochaine session de formation sécurité de l'équipe, pour que la leçon dépasse le cercle restreint impliqué dans la réponse à l'incident.
+
+### Suivi des actions
+
+Toute mesure de remédiation supplémentaire identifiée durant cette phase doit être documentée, assignée à un responsable et une échéance, et suivie jusqu'à clôture — pas traitée comme un correctif isolé oublié une fois la réunion terminée.
