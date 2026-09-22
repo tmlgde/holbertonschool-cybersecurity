@@ -95,8 +95,19 @@ Réinitialiser **tous** les identifiants potentiellement exposés, explicitement
 
 ## 5. Lessons Learned
 
-Dans les jours suivant la résolution de l'incident :
+### Réunion de retour d'expérience (post-incident review)
 
-- Un compte-rendu doit être communiqué au CISO, à la direction, et à Dave/Sarah — pas seulement en interne technique, vu les enjeux de l'IPO.
+Dans les 5 jours ouvrés suivant la clôture de l'incident, organiser une réunion formelle réunissant le CISO, Dave, Sarah, et la direction. Cette réunion n'est pas optionnelle même si l'incident a été résolu rapidement — c'est elle qui transforme un incident en amélioration réelle du programme de sécurité.
+
+### Analyse de cause racine (Root Cause Analysis)
+
+Produire une analyse de cause racine formelle et écrite, distincte du rapport d'incident chronologique : pas seulement "quelle faille a été exploitée", mais pourquoi elle existait encore (défaut de processus, contrôle manquant, délai de patch, etc.) — la cause racine est souvent organisationnelle, pas uniquement technique.
+
+### Documentation de l'incident
+
+Rédiger un rapport d'incident structuré comme action de clôture formelle (pas de simples notes informelles), incluant : chronologie complète, indicateurs ayant permis la détection, actions de containment/eradication/recovery prises, durée d'indisponibilité, et impact estimé. Ce rapport est conservé comme preuve de traçabilité pour l'auditeur externe.
+
+### Mise à jour des politiques et procédures
+
 - Le `threat_model.md` doit être mis à jour si l'incident a révélé un acteur, un vecteur, ou une menace non anticipée dans l'analyse STRIDE initiale.
-- Toute mesure de remédiation supplémentaire identifiée doit être documentée et intégrée au programme de sécurité, pas traitée comme un correctif isolé.
+- Toute autre politique concernée par l'incident
