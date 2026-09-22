@@ -73,8 +73,25 @@ Réinitialiser **tous** les identifiants potentiellement exposés, explicitement
 
 ## 4. Recovery
 
+### Restauration
+
 - Restaurer les données à partir de la **sauvegarde vérifiée** la plus récente **antérieure** à la compromission (jamais une sauvegarde dont la date suit le début de l'incident, au risque de restaurer la porte d'entrée de l'attaquant avec elle).
+
+### Vérification d'intégrité post-restauration
+
+- Une fois les données restaurées, vérifier explicitement leur intégrité avant de les considérer utilisables : comparer les checksums avec ceux connus de la sauvegarde source, exécuter les contraintes d'intégrité natives de la base (contraintes de clé étrangère, cohérence des tables), et comparer un échantillon de données avec les enregistrements attendus.
+
+### Tests de validation avant remise en production
+
+- Avant toute exposition au trafic réel, valider le fonctionnement de la base restaurée et de l'application dans un environnement **isolé** (staging) : exécuter la suite de tests fonctionnels existante, vérifier que l'application se connecte correctement et que les opérations critiques (lecture, écriture, authentification) fonctionnent comme attendu sur des données propres.
+
+### Remise en service progressive
+
 - Remettre le service en ligne progressivement, pas d'un coup : rouvrir d'abord l'accès depuis le serveur web uniquement, sous surveillance renforcée des logs, avant de considérer l'incident clos.
+
+### Période de surveillance renforcée
+
+- Maintenir une surveillance renforcée (vérification active des logs `auditd`/`rsyslog`, pas seulement l'alerting automatique standard) pendant **72 heures minimum** après la remise en service. L'incident n'est déclaré définitivement clos que si, durant cette période, aucune anomalie n'est détectée — sinon, la période de surveillance renforcée est prolongée jusqu'à stabilisation confirmée.
 
 ## 5. Lessons Learned
 
