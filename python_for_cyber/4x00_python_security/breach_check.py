@@ -10,6 +10,7 @@ def main():
     parser.add_argument("-o","--output", help="path to the output report file")
     args = parser.parse_args()
     print("BreachCheck v1.0 startup...")
+    lines = read_file(args.file)
 
 def read_file(filename: str) -> list:
     """Prend un fichier en entree et le lit comme une list"""
