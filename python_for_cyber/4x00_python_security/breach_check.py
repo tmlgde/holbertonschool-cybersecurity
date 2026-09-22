@@ -32,9 +32,9 @@ def clean_data(lines: list) -> list:
         stripped = line.strip()
         if not stripped:
             continue
-        if stipped.startwith("#"):
+        if stripped.startswith("#"):
             continue
-        cleaned.append(stripeed)
+        cleaned.append(stripped)
     return cleaned
 
 if __name__ == "__main__":
