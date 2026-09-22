@@ -14,6 +14,11 @@ configure_rsyslog() {
 }
 
 configure_auditd() {
+	if ! dpkg  -l | grep -q "^ii auditd"; then
+		echo "Installing auditd..."
+		apt-get install -y auditd
+	fi
+
 	echo "Configuring auditd rules..."
 	{
 		echo "-w /etc/passwd -p wa -k identity"
@@ -27,6 +32,7 @@ configure_auditd() {
         } > "$AUDIT_RULES"
 	
 	augenrules --load
+	auditctl -R "$AUDIT_RULES"
 }
 
 main() {
