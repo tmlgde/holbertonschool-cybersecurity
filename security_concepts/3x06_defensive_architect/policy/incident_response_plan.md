@@ -4,9 +4,42 @@
 **Auteur:** CISO par intérim
 **Audience:** Ce document est écrit pour être exécuté par Sarah et Dave en l'absence du CISO. Chaque étape référence directement les outils déjà déployés dans `technical/`.
 
-## Contexte
+## 0. Équipe de réponse et matrice d'escalade
 
-Ce playbook couvre le scénario "Base de données compromise". Il part du principe que les mesures de préparation (`hardening.sh`, `rbac_setup.sh`, `network_defense.sh`, `logging_setup.sh`) sont déjà en place — ce document décrit ce qu'il faut faire **quand**, pas **avant que**, l'incident survienne.
+### Annuaire de contacts
+
+| Rôle | Contact | Responsabilité |
+|---|---|---|
+| CISO par intérim | [nom / téléphone / email] | Coordination générale de la réponse à incident |
+| CTO (Dave) | [téléphone / email] | Exécution technique, accès systèmes |
+| Lead Dev (Sarah) | [téléphone / email] | Exécution technique, accès applicatif/BDD |
+| Conseil juridique | [cabinet / téléphone / email] | Obligations réglementaires, notification de violation de données |
+| Communication / PR | [contact / email] | Communication externe si des données clients sont affectées |
+| Forces de l'ordre (cybercriminalité) | [contact local pertinent] | À contacter uniquement sur décision du CISO ou de la direction |
+
+### Matrice d'escalade
+
+| Niveau | Déclencheur | Délai de notification | Qui est notifié |
+|---|---|---|---|
+| Niveau 1 | Anomalie détectée, non confirmée (ex. pic de connexions refusées isolé) | Immédiat, en interne | Dave et/ou Sarah, investigation autonome |
+| Niveau 2 | Compromission confirmée (corrélation de plusieurs indicateurs, cf. section Identification) | Dans l'heure suivant la confirmation | CISO |
+| Niveau 3 | Compromission confirmée avec exposition de données clients/financières, ou impact sur le calendrier de l'IPO | Dans l'heure suivant la confirmation, en parallèle du Niveau 2 | CISO + Direction + Conseil juridique |
+| Niveau 4 | Obligation légale de notification (violation de données avérée) ou suspicion d'activité criminelle nécessitant une plainte | Selon délai réglementaire applicable | Direction + Conseil juridique + Communication + Forces de l'ordre si décidé par la direction |
+
+### Règles d'activation
+
+- **Aucune communication externe** (client, presse, régulateur) ne doit être émise par Dave ou Sarah directement — toute communication externe passe obligatoirement par la Direction et le Conseil juridique, étant donné le contexte sensible de l'IPO.
+- L'escalade vers le Niveau 3 est automatique dès qu'une donnée client ou financière est suspectée d'avoir été exposée, indépendamment de la gravité technique perçue de l'incident.
+
+### Modèle de communication interne (statut d'incident)
+
+```
+STATUT INCIDENT — [Date/Heure]
+Phase actuelle : [Identification/Containment/Eradication/Recovery]
+Impact connu : [description courte]
+Actions en cours : [description courte]
+Prochaine mise à jour prévue : [heure]
+```
 
 ## 1. Identification
 
@@ -17,8 +50,6 @@ Un événement isolé n'est pas une alerte. Le signal devient significatif lorsq
 - Une combinaison des deux ci-dessus dans une fenêtre de temps rapprochée est un signal fort de compromission active, pas juste de bruit de fond.
 
 **Action immédiate :** consulter les logs sur le serveur central (jamais uniquement les logs locaux, qui pourraient avoir été altérés) et croiser les deux sources.
-
-## 2. Containment
 
 ## 2. Containment
 
