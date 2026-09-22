@@ -41,12 +41,35 @@ Ces actions de containment sont temporaires par nature : elles limitent la casse
 
 ## 3. Eradication
 
-Une fois la cause racine identifiée via les logs `auditd` et `rsyslog` (comment l'attaquant est entré, quel compte ou quelle faille a été exploitée), il faut l'éliminer réellement, pas seulement bloquer le symptôme :
+Une fois la cause racine identifiée via les logs `auditd` et `rsyslog`, l'éradication doit être exhaustive — supprimer la porte d'entrée ne suffit pas si l'attaquant a eu le temps d'installer une persistance ailleurs sur le système.
 
-- Supprimer tout compte utilisateur non identifié ou confirmé malveillant.
-- Révoquer et régénérer tous les identifiants (clés SSH, mots de passe) potentiellement exposés par la compromission.
-- Fermer définitivement le port ou la règle réseau ayant permis l'intrusion initiale.
-- Relancer `hardening.sh` et `rbac_setup.sh` pour s'assurer que la configuration de base n'a pas été altérée par l'attaquant, et repasser sur la configuration voulue.
+### Recherche de malware et de mécanismes de persistance
+
+Avant de considérer le système comme propre, vérifier explicitement :
+
+- **Services et processus** : lister les services actifs (`systemctl list-units --type=service`) et les processus en cours, comparer avec l'état de référence connu, identifier tout service ou binaire inconnu.
+- **Tâches planifiées** : inspecter `crontab -l` pour chaque utilisateur ainsi que `/etc/cron.d/`, `/etc/cron.daily/`, etc. — un attaquant y installe fréquemment une tâche pour rétablir son accès automatiquement.
+- **Clés SSH** : vérifier le contenu de `~/.ssh/authorized_keys` pour **tous** les comptes (pas seulement le compte suspecté), à la recherche d'une clé publique ajoutée par l'attaquant.
+- **Configuration sudoers et PAM** : relire `/etc/sudoers`, `/etc/sudoers.d/`, et les fichiers de configuration PAM, pour détecter une règle de privilège ajoutée frauduleusement.
+- **Hooks auditd** : vérifier que les règles dans `/etc/audit/rules.d/` n'ont pas été altérées ou désactivées par l'attaquant (rappel : la ligne `-e 2` doit avoir empêché ça jusqu'au prochain reboot — confirmer que c'est bien le cas).
+- **Binaires système** : si possible, comparer les checksums des binaires critiques (`/usr/bin/`, `/usr/sbin/`) avec une source de référence connue, à la recherche d'un remplacement malveillant (rootkit).
+
+### Correction de la vulnérabilité exploitée
+
+- Identifier précisément le logiciel, le service ou la version de paquet ayant permis l'intrusion initiale (via les logs), et appliquer le correctif ou la mise à jour correspondante (`apt update && apt upgrade` ciblé, ou changement de configuration explicite du service concerné) — relancer `hardening.sh`/`rbac_setup.sh` restaure la ligne de base attendue, mais ne remplace pas ce correctif applicatif ciblé.
+
+### Rotation complète des identifiants
+
+Réinitialiser **tous** les identifiants potentiellement exposés, explicitement listés :
+
+- Comptes Linux (mots de passe de tous les comptes du groupe concerné, pas seulement le compte suspect)
+- Utilisateurs et mots de passe de la base de données elle-même
+- Toutes les clés SSH individuelles (voir `access_control_policy.md`)
+- Tout token d'API ou identifiant de service (service accounts) utilisé par les applications connectées à la base
+
+### Vérification avant restauration
+
+- Avant de passer à la phase Recovery, **vérifier explicitement l'intégrité de la sauvegarde** qui sera utilisée pour la restauration (checksum, test de restauration sur un environnement isolé) — pour confirmer qu'elle est antérieure à la compromission et qu'elle ne réintroduit pas la porte d'entrée de l'attaquant avec elle.
 
 ## 4. Recovery
 
