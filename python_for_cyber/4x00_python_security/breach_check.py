@@ -3,6 +3,7 @@ import argparse
 import sys
 import re
 import logging
+import hashlib
 
 
 logger = logging.getLogger()
@@ -65,6 +66,13 @@ def check_policy(password: str) -> str:
         return "WEAK"
     else:
         return "COMPLIANT"
+
+def hash_password(password: str, salt: str) -> str:
+    """transforme les mots de passe weak en hash"""
+    combined_bytes = password.encode() + salt.encode()
+    hash_obj = hashlib.sha256(combined_bytes)
+    hex_final = hash_obj.hexdigest()
+    return hex_final
 
 
 if __name__ == "__main__":
