@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import sys
-import re
 import logging
-import hashlib
 import configparser
 import os
 
@@ -18,6 +16,7 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+from utils import clean_data, validate_line, check_policy, hash_password
 
 CONFIG_FILE = "config.ini"
 
