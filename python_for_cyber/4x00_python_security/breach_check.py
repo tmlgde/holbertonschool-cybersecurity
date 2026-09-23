@@ -4,7 +4,7 @@ import sys
 import logging
 import configparser
 import os
-from utils import clean_data, validate_line, check_policy, hash_password
+from utils import clean_data, validate_line, check_policy, hash_password, read_file
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -41,18 +41,6 @@ def main():
     for line in lines:
         print(line)
 
-def read_file(filename: str):
-    """Prend un fichier en entree et le lit comme un generateur"""
-    try:
-        with open(filename) as f:
-            for line in f:
-                yield line
-    except FileNotFoundError:
-        logging.error(f"[ERROR] File not found: {filename}")
-        sys.exit(1)
-    except PermissionError:
-        logging.error(f"[ERROR] Permission denied: {filename}")
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()
