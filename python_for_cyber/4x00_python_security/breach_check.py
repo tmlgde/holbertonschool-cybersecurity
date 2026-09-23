@@ -22,7 +22,7 @@ logger.addHandler(file_handler)
 CONFIG_FILE = "config.ini"
 
 if not os.path.exists(CONFIG_FILE):
-    logging.error("[ERROR] Config file missing")
+    logging.error("[ERROR] config file missing")
     sys.exit(1)
 
 config = configparser.ConfigParser()
