@@ -5,7 +5,7 @@ import re
 import logging
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 console_handler = logging.StreamHandler()
@@ -24,7 +24,7 @@ def main():
     parser.add_argument("-v","--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("-o","--output", help="path to the output report file")
     args = parser.parse_args()
-    logger.info("BreachCheck v1.0 startup...")
+    logging.info("BreachCheck v1.0 startup...")
     lines = read_file(args.file)
 
 def read_file(filename: str) -> list:
@@ -34,10 +34,10 @@ def read_file(filename: str) -> list:
             data = f.readlines()
         return data 
     except FileNotFoundError:
-        logger.error(f"[ERROR] File not found: {filename}")
+        logging.error(f"[ERROR] File not found: {filename}")
         sys.exit(1)
     except PermissionError:
-        logger.error(f"[ERROR] Permission denied: {filename}")
+        logging.error(f"[ERROR] Permission denied: {filename}")
         sys.exit(1)
 
 def clean_data(lines: list) -> list:
