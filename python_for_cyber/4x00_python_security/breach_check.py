@@ -4,6 +4,7 @@ import sys
 import logging
 import configparser
 import os
+from utils import clean_data, validate_line, check_policy, hash_password
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -16,7 +17,6 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
-from utils import clean_data, validate_line, check_policy, hash_password
 
 CONFIG_FILE = "config.ini"
 
