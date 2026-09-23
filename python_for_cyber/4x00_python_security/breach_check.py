@@ -2,6 +2,20 @@
 import argparse
 import sys
 import re
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+file_handler = logging.FileHandler("breach_check.log")
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 def main(): 
     """Parse les arguments et demarre l'outil"""
@@ -10,7 +24,7 @@ def main():
     parser.add_argument("-v","--verbose", action="store_true", help="Enable verbose output")
     parser.add_argument("-o","--output", help="path to the output report file")
     args = parser.parse_args()
-    print("BreachCheck v1.0 startup...")
+    logger.info("BreachCheck v1.0 startup...")
     lines = read_file(args.file)
 
 def read_file(filename: str) -> list:
@@ -20,10 +34,10 @@ def read_file(filename: str) -> list:
             data = f.readlines()
         return data 
     except FileNotFoundError:
-        print(f"[ERROR] File not found: {filename}", file=sys.stderr)
+        logger.error(f"[ERROR] File not found: {filename}")
         sys.exit(1)
     except PermissionError:
-        print(f"[ERROR] Permission denied: {filename}", file=sys.stderr)
+        logger.error(f"[ERROR] Permission denied: {filename}")
         sys.exit(1)
 
 def clean_data(lines: list) -> list:
