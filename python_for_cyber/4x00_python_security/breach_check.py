@@ -38,13 +38,15 @@ def main():
     args = parser.parse_args()
     logging.info("BreachCheck v1.0 startup...")
     lines = read_file(args.file)
+    for line in lines:
+        print(line)
 
-def read_file(filename: str) -> list:
-    """Prend un fichier en entree et le lit comme une list"""
+def read_file(filename: str):
+    """Prend un fichier en entree et le lit comme un generateur"""
     try:
         with open(filename) as f:
-            data = f.readlines()
-        return data 
+            for line in f:
+                yield line
     except FileNotFoundError:
         logging.error(f"[ERROR] File not found: {filename}")
         sys.exit(1)
