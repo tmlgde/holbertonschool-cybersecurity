@@ -4,7 +4,8 @@ import sys
 import re
 import logging
 import hashlib
-
+import configparser
+import os
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -17,6 +18,16 @@ file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+
+CONFIG_FILE = "config.ini"
+
+if not os.path.exists(CONFIG_FILE):
+    logging.error("[ERROR] Config file missing")
+    sys.exit(1)
+
+config = configparser.ConfigParser()
+config.read(CONFIG_FILE)
+
 common_list = ["password", "123456"]
 
 def main(): 
