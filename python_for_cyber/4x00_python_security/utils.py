@@ -21,7 +21,7 @@ def validate_line(line: str) -> bool:
     match = re.fullmatch(pattern, line)
     return match is not None
 
-def check_policy(password: str) -> str:
+def check_policy(password: str, common_list: list) -> str:
     """Verification de sécurité pour le mot de passe"""
     if len(password) < 8 or password.isalpha() or password in common_list:
         return "WEAK"
