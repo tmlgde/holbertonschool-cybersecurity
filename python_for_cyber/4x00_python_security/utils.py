@@ -3,6 +3,8 @@ import re
 import hashlib
 import logging
 import sys
+
+
 def clean_data(lines: list) -> list:
     """Nettoyer le fichier avant la recuperation"""
     cleaned = []
@@ -37,6 +39,7 @@ def hash_password(password: str, salt: str) -> str:
     hash_obj = hashlib.sha256(combined_bytes)
     hex_final = hash_obj.hexdigest()
     return hex_final
+
 
 def read_file(filename: str):
     """Prend un fichier en entree et le lit comme un generateur"""
