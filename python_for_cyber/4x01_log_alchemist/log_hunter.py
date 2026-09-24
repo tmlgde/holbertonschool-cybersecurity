@@ -11,6 +11,7 @@ APACHE_LINE_PATTERN = re.compile(
         r'"(?P<method>[A-Z]+)\s(?P<path>[^"]+?)(?:\sHTTP/[\d\.]+)?"\s'
         r'(?P<status>\d{3})\s(?P<size>\d+|-)')
 
+
 def read_stream(file_path: str) -> Iterator[str]:
     """Lit le fichier ligne par ligne et yield"""
     try:
@@ -28,6 +29,7 @@ def parse_apache_line(line: str) -> dict:
     if not match:
         return None
     return match.groupdict()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
