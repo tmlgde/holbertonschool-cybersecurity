@@ -12,6 +12,12 @@ APACHE_LINE_PATTERN = re.compile(
         r'(?P<status>\d{3})\s(?P<size>\d+|-)')
 
 
+SYSLOG_LINE_PATTERN = re.compile(
+        r'^(?P<date>[A-Z][a-z]{2}\s+\d{1,2}\s\d{2}:\d{2}:\d{2})\s'
+        r'(?P<host>\S+)\s(?P<process>[^:]+):'
+        r'\s(?P<message>.*)$')
+
+
 def read_stream(file_path: str) -> Iterator[str]:
     """Lit le fichier ligne par ligne et yield"""
     try:
@@ -31,6 +37,14 @@ def parse_apache_line(line: str) -> dict:
     return match.groupdict()
 
 
+def parse_syslog_line(line: str) -> dict:
+    """parse lignes logs SYSLOG et renvoie None si elle ne correspond pas"""
+    match_syslog = SYSLOG_LINE_PATTERN.search(line)
+    if not match_syslog:
+        return None
+    return match_syslog.groupdict()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -46,6 +60,10 @@ if __name__ == "__main__":
         event = parse_apache_line(line)
         if event is not None:
             apache_line_count += 1
+        else:
+            event = parse_syslog_line(line)
+            if event is not None:
+                syslog_line_count += 1
 
     total_parsed = apache_line_count + syslog_line_count
 
