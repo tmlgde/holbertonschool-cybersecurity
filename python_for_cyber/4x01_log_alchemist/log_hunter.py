@@ -5,7 +5,11 @@ import re
 from typing import Iterator
 
 
-APACHE_LINE_PATTERN = re.compile(r'^(?P<ip>[\d\.]+)\s\S+\s\S+\s\[(?P<date>[^\]]+)\]\s"(?P<method>[A-Z]+)\s(?P<path>[^"]+?)(?:\sHTTP/[\d\.]+)?"\s(?P<status>\d{3})\s(?P<size>\d+|-)')
+APACHE_LINE_PATTERN = re.compile(
+        r'^(?P<ip>[\d\.]+)\s\S+\s\S+\s'
+        r'\[(?P<date>[^\]]+)\]\s'
+        r'"(?P<method>[A-Z]+)\s(?P<path>[^"]+?)(?:\sHTTP/[\d\.]+)?"\s'
+        r'(?P<status>\d{3})\s(?P<size>\d+|-)')
 
 def read_stream(file_path: str) -> Iterator[str]:
     """Lit le fichier ligne par ligne et yield"""
