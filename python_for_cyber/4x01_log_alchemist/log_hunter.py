@@ -138,7 +138,6 @@ if __name__ == "__main__":
                 entry = normalize_entry(event, "syslog", line)
                 entries.append(entry)
 
-
     total_parsed = apache_line_count + syslog_line_count
 
     if total_parsed == 0:
@@ -151,10 +150,11 @@ if __name__ == "__main__":
         if sample_entry is not None:
             print("[*] Sample entry:")
             print(f"    ip={sample_entry.ip} | "
-              f"service={sample_entry.service} | "
-              f"status={sample_entry.status} | "
-              f"path={sample_entry.path}")
-       for _ in filter_logs(entries, [404, 500]):
+                  f"service={sample_entry.service} | "
+                  f"status={sample_entry.status} | "
+                  f"path={sample_entry.path}")
+        suspicious_count = 0
+        for _ in filter_logs(entries, [404, 500]):
             suspicious_count += 1
-            print("--- Filtering ---")
-            print(f"[*] Suspicious (404, 500): {suspicious_count}")
+        print("--- Filtering ---")
+        print(f"[*] Suspicious (404, 500): {suspicious_count}")
