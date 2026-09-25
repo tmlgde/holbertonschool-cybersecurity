@@ -2,8 +2,9 @@
 """création de LogHunter qui analyse un fichier de logs"""
 import argparse
 import re
-from collections import Counter
-from typing import Iterator, Iterable
+from collections import Counter, defaultdict, deque
+from typing import Iterable, Iterator, Optional
+from datetime import datetime
 
 
 APACHE_LINE_PATTERN = re.compile(
@@ -207,6 +208,43 @@ def detect_bruteforce(entries: Iterable[LogEntry]) -> Iterator[dict]:
             yield {"ip": ip, "count": count, "alert_type": "BRUTE_FORCE"}
 
 
+def parse_timestamp(timestamp: str) -> Optional[datetime]:
+    """Convertit un timestamp Apache ou Syslog en datetime"""
+    for time_format in ("%d/%b/%Y:%H:%M:%S %z", "%d/%b/%Y:%H:%M:%S"):
+        try:
+            return datetime.strptime(timestamp, time_format).replace(
+                tzinfo=None)
+        except ValueError:
+            pass
+    try:
+        return datetime.strptime(f"{datetime.now().year} {timestamp}",
+                                 "%Y %b %d %H:%M:%S")
+    except ValueError:
+        return None
+
+
+def detect_burst(entries: Iterable[LogEntry], window_seconds: int = 60,
+                 threshold: int = 10) -> Iterator[dict]:
+    """Envoie une alerte BURST"""
+    windows_by_ip = defaultdict(deque)
+    alerted_ips = set()
+    for entry in entries:
+        ip = getattr(entry, "ip", "")
+        if not ip or ip in alerted_ips:
+            continue
+        moment = parse_timestamp(getattr(entry, "timestamp", "") or "")
+        if moment is None:
+            continue
+        window = windows_by_ip[ip]
+        window.append(moment)
+        while (moment - window[0]).total_seconds() > window_seconds:
+            window.popleft()
+        if len(window) >= threshold:
+            alerted_ips.add(ip)
+            yield {"ip": ip, "count": len(window),
+                   "window": window_seconds, "alert_type": "BURST"}
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -295,3 +333,9 @@ if __name__ == "__main__":
         print(f"[*] BRUTE_FORCE alerts: {len(bruteforce_alerts)}")
         for alert in bruteforce_alerts:
             print(f"    {alert['ip']}: {alert['count']} failures")
+        burst_alerts = list(detect_burst(entries))
+        print("--- Burst Detection ---")
+        print(f"[*] BURST alerts: {len(burst_alerts)}")
+        for alert in burst_alerts:
+            print(f"    {alert['ip']}: {alert['count']} requests "
+                  f"in {alert['window']}s window")
