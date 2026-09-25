@@ -26,6 +26,9 @@ IP_IN_MESSAGE_PATTERN = re.compile(r'from\s(?P<ip>[\d\.]+)')
 GEOIP_DB = {'1.2.3.4': 'US', '5.6.7.8': 'RU'}
 
 
+BOT_SIGNATURES = ["sqlmap", "nikto", "curl", "python"]
+
+
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -119,6 +122,18 @@ def enrich_ip(log_entry: LogEntry) -> LogEntry:
     return log_entry
 
 
+def analyze_user_agent(log_entry: LogEntry) -> LogEntry:
+    """Change la fiche comme bot si une signature fais parti de la liste"""
+    searchable_text = (f"{log_entry.user_agent}{log_entry.message}"
+                       f"{log_entry.raw_line}").lower()
+    log_entry.is_bot = False
+    for signature in BOT_SIGNATURES:
+        if signature in searchable_text:
+            log_entry.is_bot = True
+            break
+    return log_entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -169,10 +184,15 @@ if __name__ == "__main__":
         print(f"[*] Suspicious (404, 500): {suspicious_count}")
 
         known_ip_count = 0
+        bot_count = 0
         for entry in entries:
             enrich_ip(entry)
+            analyze_user_agent(entry)
             if entry.country != "UNKNOWN":
                 known_ip_count += 1
+            if entry.is_bot:
+                bot_count += 1
         print("--- Enrichment ---")
         print(f"[*] GeoIP: {len(entries)} entries enriched "
               f"({known_ip_count} known IPs)")
+        print(f"[*] Bots detected: {bot_count}")
