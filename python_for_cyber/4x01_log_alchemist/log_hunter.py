@@ -198,7 +198,9 @@ def detect_bruteforce(entries: Iterable[LogEntry]) -> Iterator[dict]:
     """Alerte bruteforce pour chaque ip avec plus de 5 échecs"""
     failures_by_ip = Counter()
     for entry in entries:
-        if entry.status == 401 or "Failed password" in entry.message:
+        status = str(getattr(entry, "status", ""))
+        message = getattr(entry, "message", "") or ""
+        if status == "401" or "Failed password" in message:
             failures_by_ip[entry.ip] += 1
     for ip, count in failures_by_ip.most_common():
         if count > 5:
