@@ -2,7 +2,7 @@
 """création de LogHunter qui analyse un fichier de logs"""
 import argparse
 import re
-from typing import Iterator
+from typing import Iterator, Iterable
 
 
 APACHE_LINE_PATTERN = re.compile(
@@ -101,6 +101,15 @@ def normalize_entry(parsed_dict: dict, log_type: str,
             )
 
 
+def filter_logs(stream: Iterable[LogEntry],
+                status_codes: list = [404, 500]) -> Iterator[LogEntry]:
+    """Yield uniquement les LogEntry dont le status est dans status_code"""
+    for entry in stream:
+        status = getattr(entry, "status", None)
+        if status in status_codes:
+            yield entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -113,11 +122,13 @@ if __name__ == "__main__":
     apache_line_count = 0
     syslog_line_count = 0
     sample_entry = None
+    entries = []
     for line in read_stream(args.file):
         event = parse_apache_line(line)
         if event is not None:
             apache_line_count += 1
             entry = normalize_entry(event, "apache", line)
+            entries.append(entry)
             if sample_entry is None:
                 sample_entry = entry
         else:
@@ -125,6 +136,8 @@ if __name__ == "__main__":
             if event is not None:
                 syslog_line_count += 1
                 entry = normalize_entry(event, "syslog", line)
+                entries.append(entry)
+
 
     total_parsed = apache_line_count + syslog_line_count
 
@@ -135,9 +148,13 @@ if __name__ == "__main__":
         print(f"[*] Apache lines:  {apache_line_count}")
         print(f"[*] Syslog lines:  {syslog_line_count}")
         print(f"[*] Total parsed:  {total_parsed}")
-    if sample_entry is not None:
-        print("[*] Sample entry:")
-        print(f"    ip={sample_entry.ip} | "
+        if sample_entry is not None:
+            print("[*] Sample entry:")
+            print(f"    ip={sample_entry.ip} | "
               f"service={sample_entry.service} | "
               f"status={sample_entry.status} | "
               f"path={sample_entry.path}")
+       for _ in filter_logs(entries, [404, 500]):
+            suspicious_count += 1
+            print("--- Filtering ---")
+            print(f"[*] Suspicious (404, 500): {suspicious_count}")
