@@ -32,6 +32,15 @@ BOT_SIGNATURES = ["sqlmap", "nikto", "curl", "python"]
 BLACKLIST = {'10.0.0.1', '192.168.1.66'}
 
 
+SQLI_PATTERNS = [
+    re.compile(r"union\s+(?:all\s+)?select", re.IGNORECASE),
+    re.compile(r"'\s*or\s+'?\w+'?\s*=\s*'?\w+", re.IGNORECASE),
+    re.compile(r"--", re.IGNORECASE),
+    re.compile(r"drop\s+table", re.IGNORECASE),
+    re.compile(r"sleep\s*\(", re.IGNORECASE),
+]
+
+
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -153,6 +162,16 @@ def check_threat_intel(log_entry: LogEntry) -> LogEntry:
     return log_entry
 
 
+def detect_sqli(log_entry: LogEntry) -> LogEntry:
+    """Marque la fiche comme SQLi si un motif d'injection est trouvé."""
+    searchable_text = f"{log_entry.path} {log_entry.message}"
+    for pattern in SQLI_PATTERNS:
+        if pattern.search(searchable_text):
+            log_entry.attack_type = "SQLi"
+            break
+    return log_entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -223,3 +242,11 @@ if __name__ == "__main__":
         print("--- Threat Intelligence ---")
         print(f"[*] HIGH alerts: {high_alert_count} entries "
               f"from blacklisted IPs")
+        sqli_count = 0
+        for entry in entries:
+            detect_sqli(entry)
+            if getattr(entry, "attack_type", "") == "SQLi":
+                sqli_count += 1
+        print("--- Attack Detection ---")
+        print(f"[*] SQLi attempts: {sqli_count}")
+        print("[*] XSS attempts:  0")
