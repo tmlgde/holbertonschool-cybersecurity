@@ -23,6 +23,7 @@ SYSLOG_LINE_PATTERN = re.compile(
 IP_IN_MESSAGE_PATTERN = re.compile(r'from\s(?P<ip>[\d\.]+)')
 
 
+GEOIP_DB = {'1.2.3.4': 'US', '5.6.7.8': 'RU'}
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -110,6 +111,12 @@ def filter_logs(stream: Iterable[LogEntry],
             yield entry
 
 
+def enrich_ip(log_entry: LogEntry) -> LogEntry:
+    """Decrit une IP par un pays, l'ajoute dans la fiche"""
+    log_entry.country = GEOIP_DB.get(log_entry.ip, "UNKNOWN")
+    return log_entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -147,6 +154,14 @@ if __name__ == "__main__":
         print(f"[*] Apache lines:  {apache_line_count}")
         print(f"[*] Syslog lines:  {syslog_line_count}")
         print(f"[*] Total parsed:  {total_parsed}")
+        known_ip_count = 0
+        for entry in entries:
+            enrich_ip(entry)
+            if entry.country != "UNKNOWN":
+                known_ip_count += 1
+        print("--- Enrichment ---")
+        print(f"[*] GeoIP: {len(entries)} entries enriched"
+              f"({known_ip_count} known IPs)")
         if sample_entry is not None:
             print("[*] Sample entry:")
             print(f"    ip={sample_entry.ip} | "
