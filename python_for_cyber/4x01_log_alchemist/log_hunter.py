@@ -32,7 +32,8 @@ BOT_SIGNATURES = ["sqlmap", "nikto", "curl", "python"]
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
-    def __init__(self, ip: str, timestamp: str, service: str, message: str,
+    def __init__(self, ip: str = "", timestamp: str = "",
+                 service: str = "", message: str = "",
                  raw_line: str = "", method: str = "",
                  path: str = "", status: int = 0,
                  user_agent: str = "", size: int = 0,
