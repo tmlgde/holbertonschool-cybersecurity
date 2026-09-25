@@ -33,7 +33,9 @@ class LogEntry:
     """Centralisation des logs apache et syslog"""
 
     def __init__(self, ip: str, timestamp: str, service: str, message: str,
-                 raw_line: str) -> None:
+                 raw_line: str = "", method: str = "",
+                 path: str = "", status: int = 0,
+                 user_agent: str = "") -> None:
         """initialise un événement normalisé avec ses champs communs"""
         self.ip = ip
         self.timestamp = timestamp
