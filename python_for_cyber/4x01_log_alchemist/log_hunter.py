@@ -2,10 +2,11 @@
 """création de LogHunter qui analyse un fichier de logs"""
 import argparse
 import json
+import multiprocessing
 import re
 from collections import Counter, defaultdict, deque
-from typing import Iterable, Iterator, Optional
 from datetime import datetime
+from typing import Iterable, Iterator, List,  Optional
 
 
 APACHE_LINE_PATTERN = re.compile(
@@ -285,34 +286,85 @@ def export_report(alerts: list, filename: str, format: str = "json") -> bool:
     return True
 
 
+def process_chunk(lines: List[str]) -> List[LogEntry]:
+    """Parse, normalise, enrichit et analyse un paquet de lignes brutes."""
+    processed_entries = []
+    for line in lines:
+        event = parse_apache_line(line)
+        if event is not None:
+            entry = normalize_entry(event, "apache", line)
+        else:
+            event = parse_syslog_line(line)
+            if event is None:
+                continue
+            entry = normalize_entry(event, "syslog", line)
+        enrich_ip(entry)
+        analyze_user_agent(entry)
+        check_threat_intel(entry)
+        detect_sqli(entry)
+        detect_xss(entry)
+        processed_entries.append(entry)
+    return processed_entries
+
+
+def parallel_analyze(file_path: str, num_workers: int,
+                     chunk_size: int = 10000) -> List[LogEntry]:
+    """Répartit les lignes du fichier entre num_workers processus."""
+    lines = list(read_stream(file_path))
+    chunks = []
+    for start in range(0, len(lines), chunk_size):
+        chunks.append(lines[start:start + chunk_size])
+    with multiprocessing.Pool(processes=num_workers) as pool:
+        chunk_results = pool.map(process_chunk, chunks)
+    entries = []
+    for chunk_entries in chunk_results:
+        entries.extend(chunk_entries)
+    return entries
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
     parser.add_argument("file", help="Path to the log file")
     parser.add_argument("--report", help="Export alerts to a JSON file")
+    parser.add_argument("--workers", type=int, default=0,
+                        help="Number of worker process")
     args = parser.parse_args()
 
     print("[*] LogHunter - Log Analysis Engine")
-    print(f"[*] Reading: {args.file}")
 
-    apache_line_count = 0
-    syslog_line_count = 0
-    sample_entry = None
-    entries = []
-    for line in read_stream(args.file):
-        event = parse_apache_line(line)
-        if event is not None:
-            apache_line_count += 1
-            entry = normalize_entry(event, "apache", line)
-            entries.append(entry)
-            if sample_entry is None:
-                sample_entry = entry
-        else:
-            event = parse_syslog_line(line)
+    if args.workers > 0:
+        print(f"[*] Reading: {args.file} "
+              f"(parallel: {args.workers} workers)")
+        entries = parallel_analyze(args.file, args.workers)
+        apache_line_count = 0
+        sample_entry = None
+        for entry in entries:
+            if entry.service == "http":
+                apache_line_count += 1
+                if sample_entry is None:
+                    sample_entry = entry
+        syslog_line_count = len(entries) - apache_line_count
+    else:
+        print(f"[*] Reading: {args.file}")
+        apache_line_count = 0
+        syslog_line_count = 0
+        sample_entry = None
+        entries = []
+        for line in read_stream(args.file):
+            event = parse_apache_line(line)
             if event is not None:
-                syslog_line_count += 1
-                entry = normalize_entry(event, "syslog", line)
+                apache_line_count += 1
+                entry = normalize_entry(event, "apache", line)
                 entries.append(entry)
+                if sample_entry is None:
+                    sample_entry = entry
+            else:
+                event = parse_syslog_line(line)
+                if event is not None:
+                    syslog_line_count += 1
+                    entry = normalize_entry(event, "syslog", line)
+                    entries.append(entry)
 
     total_parsed = apache_line_count + syslog_line_count
 
