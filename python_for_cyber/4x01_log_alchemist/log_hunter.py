@@ -29,6 +29,9 @@ GEOIP_DB = {'1.2.3.4': 'US', '5.6.7.8': 'RU'}
 BOT_SIGNATURES = ["sqlmap", "nikto", "curl", "python"]
 
 
+BLACKLIST = {'10.0.0.1', '192.168.1.66'}
+
+
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -141,6 +144,15 @@ def analyze_user_agent(log_entry: LogEntry) -> LogEntry:
     return log_entry
 
 
+def check_threat_intel(log_entry: LogEntry) -> LogEntry:
+    """Definit si une ip est High ou Low dans comparé au set"""
+    if log_entry.ip in BLACKLIST:
+        log_entry.alert_level = "HIGH"
+    else:
+        log_entry.alert_level = "LOW"
+    return log_entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -203,3 +215,11 @@ if __name__ == "__main__":
         print(f"[*] GeoIP: {len(entries)} entries enriched "
               f"({known_ip_count} known IPs)")
         print(f"[*] Bots detected: {bot_count}")
+        high_alert_count = 0
+        for entry in entries:
+            check_threat_intel(entry)
+            if entry.alert_level == "HIGH":
+                high_alert_count += 1
+        print("--- Threat Intelligence ---")
+        print(f"[*] HIGH alerts: {high_alert_count} entries "
+              f"from blacklisted IPs")
