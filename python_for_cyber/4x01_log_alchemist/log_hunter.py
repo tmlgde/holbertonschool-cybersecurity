@@ -41,6 +41,16 @@ SQLI_PATTERNS = [
 ]
 
 
+XSS_PATTERNS = [
+    re.compile(r"<script", re.IGNORECASE),
+    re.compile(r"javascript:", re.IGNORECASE),
+    re.compile(r"\bon[a-z]+\s*=", re.IGNORECASE),
+    re.compile(r"<svg", re.IGNORECASE),
+    re.compile(r"<img", re.IGNORECASE),
+    re.compile(r"alert\s*\(", re.IGNORECASE),
+]
+
+
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -172,6 +182,17 @@ def detect_sqli(log_entry: LogEntry) -> LogEntry:
     return log_entry
 
 
+def detect_xss(log_entry: LogEntry) -> LogEntry:
+    """Marque la fiche comme XSS si un motif de script est trouvé."""
+    if getattr(log_entry, "attack_type", "") == "SQLi":
+        return log_entry
+    for pattern in XSS_PATTERNS:
+        if pattern.search(log_entry.path):
+            log_entry.attack_type = "XSS"
+            break
+    return log_entry
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -243,10 +264,15 @@ if __name__ == "__main__":
         print(f"[*] HIGH alerts: {high_alert_count} entries "
               f"from blacklisted IPs")
         sqli_count = 0
+        xss_count = 0
         for entry in entries:
             detect_sqli(entry)
-            if getattr(entry, "attack_type", "") == "SQLi":
+            detect_xss(entry)
+            attack_type = getattr(entry, "attack_type", "")
+            if attack_type == "SQLi":
                 sqli_count += 1
+            elif attack_type == "XSS":
+                xss_count += 1
         print("--- Attack Detection ---")
         print(f"[*] SQLi attempts: {sqli_count}")
-        print("[*] XSS attempts:  0")
+        print(f"[*] XSS attempts:  {xss_count}")
