@@ -245,6 +245,23 @@ def detect_burst(entries: Iterable[LogEntry], window_seconds: int = 60,
                    "window": window_seconds, "alert_type": "BURST"}
 
 
+def correlate_events(entries: Iterable[LogEntry]) -> Iterator[dict]:
+    """Yield un incident critique quand une ip scanne puis tente SQLi"""
+    state_by_ip = defaultdict(set)
+    for entry in entries:
+        ip = getattr(entry, "ip", "")
+        if not ip:
+            continue
+        if str(getattr(entry, "status", "")) == "404":
+            state_by_ip[ip].add("scanner")
+        if getattr(entry, "attack_type", "") == "SQLi":
+            state_by_ip[ip].add("sqli")
+        if "scanner" in state_by_ip[ip] and "sqli" in state_by_ip[ip]:
+            yield {"ip": ip, "stages": ["scanner", "sqli"],
+                        "alert_type": "CRITICAL INCIDENT"}
+            state_by_ip[ip].clear()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -339,3 +356,8 @@ if __name__ == "__main__":
         for alert in burst_alerts:
             print(f"    {alert['ip']}: {alert['count']} requests "
                   f"in {alert['window']}s window")
+        incidents = list(correlate_events(entries))
+        print("--- Correlation ---")
+        print("[*] CRITICAL INCIDENTS:")
+        for incident in incidents:
+            print(f"    {incident['ip']}: {' -> '.join(incident['stages'])}")
