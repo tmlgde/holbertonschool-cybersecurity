@@ -24,6 +24,8 @@ IP_IN_MESSAGE_PATTERN = re.compile(r'from\s(?P<ip>[\d\.]+)')
 
 
 GEOIP_DB = {'1.2.3.4': 'US', '5.6.7.8': 'RU'}
+
+
 class LogEntry:
     """Centralisation des logs apache et syslog"""
 
@@ -70,7 +72,7 @@ def parse_syslog_line(line: str) -> dict:
 
 def normalize_entry(parsed_dict: dict, log_type: str,
                     raw_line: str = '') -> LogEntry:
-    """Ecrire une docstring plus tard"""
+        """Convertit un dict Apache ou Syslog en LogEntry normalisé."""
     if log_type == "apache":
         entry = LogEntry(
                 ip=parsed_dict["ip"],
@@ -154,14 +156,6 @@ if __name__ == "__main__":
         print(f"[*] Apache lines:  {apache_line_count}")
         print(f"[*] Syslog lines:  {syslog_line_count}")
         print(f"[*] Total parsed:  {total_parsed}")
-        known_ip_count = 0
-        for entry in entries:
-            enrich_ip(entry)
-            if entry.country != "UNKNOWN":
-                known_ip_count += 1
-        print("--- Enrichment ---")
-        print(f"[*] GeoIP: {len(entries)} entries enriched"
-              f"({known_ip_count} known IPs)")
         if sample_entry is not None:
             print("[*] Sample entry:")
             print(f"    ip={sample_entry.ip} | "
@@ -173,3 +167,12 @@ if __name__ == "__main__":
             suspicious_count += 1
         print("--- Filtering ---")
         print(f"[*] Suspicious (404, 500): {suspicious_count}")
+
+        known_ip_count = 0
+        for entry in entries:
+            enrich_ip(entry)
+            if entry.country != "UNKNOWN":
+                known_ip_count += 1
+        print("--- Enrichment ---")
+        print(f"[*] GeoIP: {len(entries)} entries enriched "
+              f"({known_ip_count} known IPs)")
