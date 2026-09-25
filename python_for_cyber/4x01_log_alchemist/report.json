@@ -1,0 +1,283 @@
+[
+  {
+    "ip": "124.30.164.173",
+    "count": 38,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "56.63.118.88",
+    "count": 30,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "130.79.20.40",
+    "count": 29,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "211.234.157.176",
+    "count": 29,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "134.131.44.225",
+    "count": 28,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "41.68.247.73",
+    "count": 28,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "70.110.46.238",
+    "count": 27,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "186.147.148.202",
+    "count": 27,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "189.194.180.233",
+    "count": 27,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "220.142.168.244",
+    "count": 26,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "151.80.208.168",
+    "count": 25,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "81.107.86.148",
+    "count": 25,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "14.82.84.20",
+    "count": 24,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "57.95.254.109",
+    "count": 17,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "50.123.50.94",
+    "count": 16,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "25.198.61.220",
+    "count": 15,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "71.98.60.253",
+    "count": 13,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "141.111.198.150",
+    "count": 13,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "15.185.242.246",
+    "count": 12,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "33.150.245.52",
+    "count": 11,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "192.101.56.49",
+    "count": 11,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "151.80.208.168",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "33.150.245.52",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "81.107.86.148",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "130.79.20.40",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "71.98.60.253",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "192.101.56.49",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "15.185.242.246",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "70.110.46.238",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "25.198.61.220",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "128.250.202.141",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "65.176.65.200",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "220.142.168.244",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "134.131.44.225",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "211.234.157.176",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "14.82.84.20",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "57.95.254.109",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "186.147.148.202",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "141.111.198.150",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "56.63.118.88",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "14.149.56.52",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "50.123.50.94",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "41.68.247.73",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "189.194.180.233",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "124.30.164.173",
+    "count": 10,
+    "window": 60,
+    "alert_type": "BURST"
+  },
+  {
+    "ip": "194.128.138.38",
+    "stages": [
+      "scanner",
+      "sqli"
+    ],
+    "alert_type": "CRITICAL INCIDENT"
+  },
+  {
+    "ip": "14.149.56.52",
+    "stages": [
+      "scanner",
+      "sqli"
+    ],
+    "alert_type": "CRITICAL INCIDENT"
+  },
+  {
+    "ip": "154.134.45.88",
+    "stages": [
+      "scanner",
+      "sqli"
+    ],
+    "alert_type": "CRITICAL INCIDENT"
+  },
+  {
+    "ip": "175.186.240.145",
+    "stages": [
+      "scanner",
+      "sqli"
+    ],
+    "alert_type": "CRITICAL INCIDENT"
+  }
+]

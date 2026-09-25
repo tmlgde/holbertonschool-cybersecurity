@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """création de LogHunter qui analyse un fichier de logs"""
 import argparse
+import json
 import re
 from collections import Counter, defaultdict, deque
 from typing import Iterable, Iterator, Optional
@@ -262,10 +263,33 @@ def correlate_events(entries: Iterable[LogEntry]) -> Iterator[dict]:
             state_by_ip[ip].clear()
 
 
+def export_report(alerts: list, filename: str, format: str = "json") -> bool:
+    """Écrit la liste d'alertes (dict ou LogEntry) dans un fichier JSON."""
+    if format != "json":
+        print(f"[ERROR] Unsupported report format: {format}")
+        return False
+    serializable_alerts = []
+    for alert in alerts:
+        if isinstance(alert, dict):
+            serializable_alerts.append(alert)
+        else:
+            serializable_alerts.append(vars(alert))
+    try:
+        with open(filename, "w", encoding="utf-8") as report_file:
+            json.dump(serializable_alerts, report_file, indent=2,
+                      default=str)
+            report_file.write("\n")
+    except OSError as error:
+        print(f"[ERROR] Cannot write report {filename}: {error}")
+        return False
+    return True
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
     parser.add_argument("file", help="Path to the log file")
+    parser.add_argument("--report", help="Export alerts to a JSON file")
     args = parser.parse_args()
 
     print("[*] LogHunter - Log Analysis Engine")
@@ -361,3 +385,12 @@ if __name__ == "__main__":
         print("[*] CRITICAL INCIDENTS:")
         for incident in incidents:
             print(f"    {incident['ip']}: {' -> '.join(incident['stages'])}")
+        all_alerts = bruteforce_alerts + burst_alerts + incidents
+        print()
+        if args.report:
+            if export_report(all_alerts, args.report):
+                print(f"[*] Report exported: {args.report} "
+                      f"({len(all_alerts)} alerts)")
+        else:
+            print(f"[*] Total alerts: {len(all_alerts)}")
+            print("[*] Use --report <file> to export.")

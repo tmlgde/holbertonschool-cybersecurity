@@ -1,0 +1,19 @@
+[
+  {
+    "ip": "9.9.9.9",
+    "count": 25,
+    "alert_type": "BRUTE_FORCE"
+  },
+  {
+    "ip": "1.2.3.4",
+    "timestamp": "",
+    "service": "",
+    "message": "",
+    "raw_line": "",
+    "method": "",
+    "path": "",
+    "status": 404,
+    "user_agent": "",
+    "size": 0
+  }
+]
