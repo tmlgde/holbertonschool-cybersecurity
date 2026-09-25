@@ -40,10 +40,10 @@ class LogEntry:
         self.service = service
         self.message = message
         self.raw_line = raw_line
-        self.method = ""
-        self.path = ""
-        self.status = 0
-        self.user_agent = ""
+        self.method = method
+        self.path = path
+        self.status = status
+        self.user_agent = user_agent
 
 
 def read_stream(file_path: str) -> Iterator[str]:
