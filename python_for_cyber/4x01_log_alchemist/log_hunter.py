@@ -2,6 +2,7 @@
 """création de LogHunter qui analyse un fichier de logs"""
 import argparse
 import re
+from collections import Counter
 from typing import Iterator, Iterable
 
 
@@ -193,6 +194,17 @@ def detect_xss(log_entry: LogEntry) -> LogEntry:
     return log_entry
 
 
+def detect_bruteforce(entries: Iterable[LogEntry]) -> Iterator[dict]:
+    """Alerte bruteforce pour chaque ip avec plus de 5 échecs"""
+    failures_by_ip = Counter()
+    for entry in entries:
+        if entry.status == 401 or "Failed password" in entry.message:
+            failures_by_ip[entry.ip] += 1
+    for ip, count in failures_by_ip.most_common():
+        if count > 5:
+            yield {"ip": ip, "count": count, "alert_type": "BRUTE_FORCE"}
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="LogHunter - Log Analysis Engine")
@@ -276,3 +288,8 @@ if __name__ == "__main__":
         print("--- Attack Detection ---")
         print(f"[*] SQLi attempts: {sqli_count}")
         print(f"[*] XSS attempts:  {xss_count}")
+        bruteforce_alerts = list(detect_bruteforce(entries))
+        print("--- Brute Force ---")
+        print(f"[*] BRUTE_FORCE alerts: {len(bruteforce_alerts)}")
+        for alert in bruteforce_alerts:
+            print(f"    {alert['ip']}: {alert['count']} failures")
