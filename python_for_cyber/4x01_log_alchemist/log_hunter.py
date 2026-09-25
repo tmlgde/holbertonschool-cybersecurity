@@ -72,7 +72,7 @@ def parse_syslog_line(line: str) -> dict:
 
 def normalize_entry(parsed_dict: dict, log_type: str,
                     raw_line: str = '') -> LogEntry:
-        """Convertit un dict Apache ou Syslog en LogEntry normalisé."""
+    """Convertit un dict Apache ou Syslog en LogEntry normalisé."""
     if log_type == "apache":
         entry = LogEntry(
                 ip=parsed_dict["ip"],
