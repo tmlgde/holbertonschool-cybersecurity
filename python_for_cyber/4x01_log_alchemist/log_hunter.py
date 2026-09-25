@@ -35,7 +35,8 @@ class LogEntry:
     def __init__(self, ip: str, timestamp: str, service: str, message: str,
                  raw_line: str = "", method: str = "",
                  path: str = "", status: int = 0,
-                 user_agent: str = "") -> None:
+                 user_agent: str = "", size: int = 0,
+                 **extra_fields) -> None:
         """initialise un événement normalisé avec ses champs communs"""
         self.ip = ip
         self.timestamp = timestamp
@@ -46,6 +47,9 @@ class LogEntry:
         self.path = path
         self.status = status
         self.user_agent = user_agent
+        self.size = size
+        for field_name, value in extra_fields.items():
+            setattr(self, field_name, value)
 
 
 def read_stream(file_path: str) -> Iterator[str]:
