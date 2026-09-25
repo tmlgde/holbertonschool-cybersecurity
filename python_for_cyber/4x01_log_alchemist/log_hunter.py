@@ -258,7 +258,7 @@ def correlate_events(entries: Iterable[LogEntry]) -> Iterator[dict]:
             state_by_ip[ip].add("sqli")
         if "scanner" in state_by_ip[ip] and "sqli" in state_by_ip[ip]:
             yield {"ip": ip, "stages": ["scanner", "sqli"],
-                        "alert_type": "CRITICAL INCIDENT"}
+                   "alert_type": "CRITICAL INCIDENT"}
             state_by_ip[ip].clear()
 
 
