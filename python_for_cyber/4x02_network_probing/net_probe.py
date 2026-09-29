@@ -3,13 +3,11 @@
 import argparse
 import json
 import socket
-import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
 SCAN_DELAY = 0.0
-DELAY_LOCK = threading.Lock()
 
 
 def main() -> None:
@@ -94,6 +92,9 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
     with ThreadPoolExecutor(max_workers=50) as executor:
         futures = []
         for port in range(start_port, end_port + 1):
+            if SCAN_DELAY > 0:
+                print(f"[DEBUG] Sleeping {SCAN_DELAY}s before next packet...")
+                time.sleep(SCAN_DELAY)
             futures.append(executor.submit(scan_single_port, ip, port))
         for future in as_completed(futures):
             port_result = future.result()
@@ -105,10 +106,6 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
 
 def scan_single_port(ip: str, port: int) -> Optional[dict]:
     """scan un port simple"""
-    if SCAN_DELAY > 0:
-        with DELAY_LOCK:
-            print(f"[DEBUG] Sleeping {SCAN_DELAY}s before next packet...")
-            time.sleep(SCAN_DELAY)
     if check_port(ip, port):
         service = get_service_info(ip, port)
         status = check_vulnerability(service)
