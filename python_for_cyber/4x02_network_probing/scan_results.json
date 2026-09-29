@@ -1,0 +1,7 @@
+[
+  {
+    "port": 80,
+    "service": "HTTP/1.0 200 OK\r\nServer: SimpleHTTP/0.6 Python/3.13.14\r\nDate: Tue, 29 Sep 2026 13:09:56 GMT\r\nContent-type: text/html; charset=utf-8\r\nContent-Length: 3504",
+    "vulnerabilty": "NO"
+  }
+]

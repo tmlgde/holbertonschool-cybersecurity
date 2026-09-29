@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Debut du module, docstring a modifier"""
+import argparse
+import json
 import socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
@@ -7,8 +9,33 @@ from typing import Optional
 
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
+    parser = argparse.ArgumentParser(
+        description="NetProbe - TCP port scanner with banner grabbing"
+    )
+    parser.add_argument("-t", "--target", required=True,
+                        help="Target IP address")
+    parser.add_argument("-p", "--ports", default="1-1024",
+                        help="Port range, e.g. 1-1000 (default: 1-1024)")
+    parser.add_argument("-o", "--output", help="Output JSON file")
+    args = parser.parse_args()
+
     print("NetProbe v1.0 initialized...")
-    scan_ports("127.0.0.1", 20, 80)
+
+    try:
+        start_port, end_port = parse_port_range(args.ports)
+    except ValueError:
+        print("[ERROR] Invalid port range. "
+              "Use format start-end (e.g. 1-1000).")
+        return
+
+    try:
+        results = scan_ports(args.target, start_port, end_port)
+    except KeyboardInterrupt:
+        print("\n[INFO] Scan interrupted by user.")
+        return
+
+    if args.output is not None:
+        save_report(results, args.output)
 
 
 def check_port(ip: str, port: int) -> bool:
@@ -71,14 +98,15 @@ def scan_single_port(ip: str, port: int) -> Optional[dict]:
     """scan un port simple"""
     if check_port(ip, port):
         service = get_service_info(ip, port)
-        status = check_vulnerablity(service)
+        status = check_vulnerability(service)
 
         line = f"[+] Port {port} Open: {service}"
         if status:
             line += f" {status}"
-            print(line)
+        print(line)
 
-        return {'port': port, 'service': service, 'vulnerabilty': status}
+        return {'port': port, 'service': service,
+                'vulnerabilty': "YES" if status else "NO"}
     return None
 
 
@@ -102,7 +130,7 @@ def get_service_info(ip: str, port: int) -> str:
     banner = get_banner(ip, port)
 
     if banner == "Unknown":
-        return "Unknown"
+        return guess_service(port)
     return banner
 
 
@@ -114,6 +142,23 @@ def check_vulnerability(banner: str) -> str:
         if signature.lower() in banner.lower():
             return "[VULNERABLE]"
     return ""
+
+
+def parse_port_range(port_range: str) -> tuple:
+    """docstring parse_port_range"""
+    split_range = port_range.split("-")
+    start_port, end_port = split_range
+    return int(start_port), int(end_port)
+
+
+def save_report(results: list, output_file: str) -> None:
+    """docstring"""
+    try:
+        with open(output_file, "w", encoding="utf-8") as json_file:
+            json.dump(results, json_file, indent=2)
+            print(f"[+] Report saved to {output_file}")
+    except OSError:
+        print(f"[ERROR] Could not write report to {output_file}.")
 
 
 if __name__ == "__main__":
