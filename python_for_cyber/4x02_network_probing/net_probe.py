@@ -39,11 +39,8 @@ def get_banner(ip: str, port: int) -> str:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(1.0)
             s.connect((ip, port))
-            try:
-                banner_data = s.recv(1024)
-            except TimeoutError:
-                s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
-                banner_data = s.recv(1024)
+            s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
+            banner_data = s.recv(1024)
 
             if banner_data == b"":
                 return "Unknown"
