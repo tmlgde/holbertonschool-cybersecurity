@@ -94,7 +94,7 @@ def get_service(port: int) -> str:
 def get_service_info(ip: str, port: int) -> str:
     """indentifier le service d'un port avec banner"""
     banner = get_banner(ip, port)
-    
+
     if banner == "Unknown":
         return "Unknown"
     return banner
