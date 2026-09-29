@@ -3,6 +3,7 @@
 import argparse
 import json
 import socket
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
@@ -17,6 +18,8 @@ def main() -> None:
     parser.add_argument("-p", "--ports", default="1-1024",
                         help="Port range, e.g. 1-1000 (default: 1-1024)")
     parser.add_argument("-o", "--output", help="Output JSON file")
+    parser.add_argument("-d", "--delay", type=float,
+                        default=0.0, help="Delay between scans in second")
     args = parser.parse_args()
 
     print("NetProbe v1.0 initialized...")
@@ -29,7 +32,7 @@ def main() -> None:
         return
 
     try:
-        results = scan_ports(args.target, start_port, end_port)
+        results = scan_ports(args.target, start_port, end_port, args.delay)
     except KeyboardInterrupt:
         print("\n[INFO] Scan interrupted by user.")
         return
@@ -77,7 +80,7 @@ def get_banner(ip: str, port: int) -> str:
         return "Unknown"
 
 
-def scan_ports(ip: str, start_port: int, end_port: int) -> list:
+def scan_ports(ip: str, start_port: int, end_port: int, delay: float) -> list:
     """scan les ports avec un scan multi-threadé, 50 workers max"""
     print(f"Scanning {ip} from {start_port} to {end_port}...")
     results = []
@@ -85,7 +88,7 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
     with ThreadPoolExecutor(max_workers=50) as executor:
         futures = []
         for port in range(start_port, end_port + 1):
-            futures.append(executor.submit(scan_single_port, ip, port))
+            futures.append(executor.submit(scan_single_port, ip, port, delay))
         for future in as_completed(futures):
             port_result = future.result()
             if port_result is not None:
@@ -94,8 +97,11 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
     return results
 
 
-def scan_single_port(ip: str, port: int) -> Optional[dict]:
+def scan_single_port(ip: str, port: int, delay: float) -> Optional[dict]:
     """scan un port simple"""
+    if delay > 0:
+        print(f"[DEBUG] Sleeping {delay}s before next packet...")
+        time.sleep(delay)
     if check_port(ip, port):
         service = get_service_info(ip, port)
         status = check_vulnerability(service)
@@ -106,7 +112,7 @@ def scan_single_port(ip: str, port: int) -> Optional[dict]:
         print(line)
 
         return {'port': port, 'service': service,
-                'vulnerabilty': "YES" if status else "NO"}
+                'vulnerability': "YES" if status else "NO", 'state': 'open'}
     return None
 
 
