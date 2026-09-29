@@ -57,7 +57,7 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
 
     with ThreadPoolExecutor(max_workers=50) as executor:
         futures = []
-        for port in range(start_port, end_port +1):
+        for port in range(start_port, end_port + 1):
             futures.append(executor.submit(scan_single_port, ip, port))
         for future in as_completed(futures):
             port_result = future.result()
