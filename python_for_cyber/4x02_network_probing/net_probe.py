@@ -5,9 +5,8 @@ import socket
 
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
-    print("NetProbe v1.0 initialized...")
-    print(f"Port 80 is open: {check_port('google.com', 80)}")
-    print(f"Port 81 is open: {check_port('google.com', 81)}")
+    print("NetProbe v1.0 initialized..."))
+    print(ping_sweep("192.168.1"))
 
 
 def check_port(ip: str, port: int) -> bool:
@@ -20,6 +19,17 @@ def check_port(ip: str, port: int) -> bool:
             return True
         except OSError:
             return False
+
+
+def ping_sweep(subnet: str) -> list:
+    """test le sous réseau pour /24 sous réseau"""
+    good_ip = []
+
+    for i in range(1, 255):
+        ip = f"{subnet}.{i}"
+        if check_port(ip, 80):
+            good_ip.append(ip)
+    return good_ip
 
 
 if __name__ == "__main__":
