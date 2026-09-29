@@ -71,8 +71,14 @@ def scan_single_port(ip: str, port: int) -> Optional[dict]:
     """scan un port simple"""
     if check_port(ip, port):
         service = get_service_info(ip, port)
-        print(f"[+] Port {port} Open: {service}")
-        return {'port': port, 'service': service}
+        status = check_vulnerablity(service)
+
+        line = f"[+] Port {port} Open: {service}"
+        if status:
+            line += f" {status}"
+            print(line)
+
+        return {'port': port, 'service': service, 'vulnerabilty': status}
     return None
 
 
@@ -98,6 +104,16 @@ def get_service_info(ip: str, port: int) -> str:
     if banner == "Unknown":
         return "Unknown"
     return banner
+
+
+def check_vulnerability(banner: str) -> str:
+    """identifie une vulnerabilité dans une liste"""
+    bad_signatures = ["vsftpd 2.3.4", "Apache 2.2.8"]
+
+    for signature in bad_signatures:
+        if signature.lower() in banner.lower():
+            return "[VULNERABLE]"
+    return ""
 
 
 if __name__ == "__main__":
