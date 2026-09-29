@@ -47,7 +47,7 @@ def get_banner(ip: str, port: int) -> str:
 
             if banner_data == b"":
                 return "Unknown"
-            return banner_date.decode("utf-8", error="ignore").strip()
+            return banner_data.decode("utf-8", error="ignore").strip()
     except OSError:
         return "Unknown"
 
