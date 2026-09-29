@@ -6,8 +6,7 @@ import socket
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
     print("NetProbe v1.0 initialized...")
-    print(ping_sweep("192.168.1"))
-    print(get_banner("scanme.nmap.org", 22))
+    scan_ports("127.0.0.1", 20, 80)
 
 
 def check_port(ip: str, port: int) -> bool:
@@ -47,6 +46,19 @@ def get_banner(ip: str, port: int) -> str:
             return banner_data.decode("utf-8", errors="ignore").strip()
     except OSError:
         return "Unknown"
+
+
+def scan_ports(ip: str, start_port: int, end_port: int) -> list:
+    """scan les ports et si c'est ouvert, return une liste de dict"""
+    print(f"Scanning {ip} from {start_port} to {end_port}...")
+    results = []
+
+    for port in range(start_port, end_port + 1):
+        if check_port(ip, port):
+            service = get_banner(ip, port)
+            print(f"[+] Port {port} Open: {service}")
+            results.append({'port': port, 'service': service})
+    return results
 
 
 if __name__ == "__main__":
