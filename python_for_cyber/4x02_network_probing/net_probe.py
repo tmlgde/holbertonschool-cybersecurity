@@ -76,7 +76,7 @@ def scan_single_port(ip: str, port: int) -> Optional[dict]:
     return None
 
 
-def get_service(port: int) -> str:
+def guess_service(port: int) -> str:
     """identifier les services sans banner"""
     common_ports = {
                 21: "FTP",
