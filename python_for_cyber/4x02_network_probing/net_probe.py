@@ -5,7 +5,7 @@ import socket
 
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
-    print("NetProbe v1.0 initialized..."))
+    print("NetProbe v1.0 initialized...")
     print(ping_sweep("192.168.1"))
 
 
