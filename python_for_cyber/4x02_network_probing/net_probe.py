@@ -9,6 +9,7 @@ from typing import Optional
 
 SCAN_DELAY = 0.0
 
+
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
     global SCAN_DELAY
