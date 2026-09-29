@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Debut du module, docstring a modifier"""
 import socket
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Optional
 
 
 def main() -> None:
@@ -49,16 +51,29 @@ def get_banner(ip: str, port: int) -> str:
 
 
 def scan_ports(ip: str, start_port: int, end_port: int) -> list:
-    """scan les ports et si c'est ouvert, return une liste de dict"""
+    """scan les ports avec un scan multi-threadé, 50 workers max"""
     print(f"Scanning {ip} from {start_port} to {end_port}...")
     results = []
 
-    for port in range(start_port, end_port + 1):
-        if check_port(ip, port):
-            service = get_banner(ip, port)
-            print(f"[+] Port {port} Open: {service}")
-            results.append({'port': port, 'service': service})
+    with ThreadPoolExecutor(max_workers=50) as executor:
+        futures = []
+        for port in range(start_port, end_port +1):
+            futures.append(executor.submit(scan_single_port, ip, port))
+        for future in as_completed(futures):
+            port_result = future.result()
+            if port_result is not None:
+                results.append(port_result)
+    results.sort(key=lambda result: result['port'])
     return results
+
+
+def scan_single_port(ip: str, port: int) -> Optional[dict]:
+    """scan un port simple"""
+    if check_port(ip, port):
+        service = get_banner(ip, port)
+        print(f"[+] Port {port} Open: {service}")
+        return {'port': port, 'service': service}
+    return None
 
 
 if __name__ == "__main__":
