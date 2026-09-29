@@ -70,10 +70,34 @@ def scan_ports(ip: str, start_port: int, end_port: int) -> list:
 def scan_single_port(ip: str, port: int) -> Optional[dict]:
     """scan un port simple"""
     if check_port(ip, port):
-        service = get_banner(ip, port)
+        service = get_service_info(ip, port)
         print(f"[+] Port {port} Open: {service}")
         return {'port': port, 'service': service}
     return None
+
+
+def get_service(port: int) -> str:
+    """identifier les services sans banner"""
+    common_ports = {
+                21: "FTP",
+                22: "SSH",
+                80: "HTTP",
+                443: "HTTPS",
+                3306: "MySQL"
+                }
+    service_name = common_ports.get(port, "Unknown")
+    if service_name == "Unknown":
+        return "Unknown"
+    return f"{service_name} (Guessed)"
+
+
+def get_service_info(ip: str, port: int) -> str:
+    """indentifier le service d'un port avec banner"""
+    banner = get_banner(ip, port)
+    
+    if banner == "Unknown":
+        return "Unknown"
+    return banner
 
 
 if __name__ == "__main__":
