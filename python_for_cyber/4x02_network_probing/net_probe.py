@@ -193,13 +193,10 @@ def scan_udp(ip: str, port: int) -> bool:
                 print("Response received")
             return True
     except TimeoutError:
-        print("No response")
         return True
     except ConnectionRefusedError:
-        print("Connection refused")
         return False
     except OSError:
-        print("Network error")
         return False
 
 
