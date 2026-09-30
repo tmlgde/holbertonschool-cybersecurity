@@ -99,7 +99,7 @@ def get_banner(ip: str, port: int) -> str:
 
             if banner.startswith("HTTP/"):
                 return parse_http_server(banner)
-            return banner    
+            return banner
     except OSError:
         return "Unknown"
 
