@@ -95,7 +95,11 @@ def get_banner(ip: str, port: int) -> str:
 
             if banner_data == b"":
                 return "Unknown"
-            return banner_data.decode("utf-8", errors="ignore").strip()
+            banner = banner_data.decode("utf-8", errors="ignore").strip()
+
+            if banner.startswith("HTTP/"):
+                return parse_http_server(banner)
+            return banner    
     except OSError:
         return "Unknown"
 
@@ -162,8 +166,6 @@ def get_service_info(ip: str, port: int) -> str:
 
     if banner == "Unknown":
         return guess_service(port)
-    if banner.startswith("HTTP/"):
-        return f"HTTP ({parse_http_server(banner)})"
     return banner
 
 
