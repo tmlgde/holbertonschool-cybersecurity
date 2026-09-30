@@ -90,7 +90,7 @@ def get_banner(ip: str, port: int) -> str:
             if SOURCE_IP is not None:
                 s.bind((SOURCE_IP, 0))
             s.connect((ip, port))
-            s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
+            s.sendall(f"GET / HTTP/1.1\r\nHost: {ip}\r\n\r\n".encode())
             banner_data = s.recv(1024)
 
             if banner_data == b"":
@@ -162,6 +162,8 @@ def get_service_info(ip: str, port: int) -> str:
 
     if banner == "Unknown":
         return guess_service(port)
+    if banner.startswith("HTTP/"):
+        return f"HTTP ({parse_http_server(banner)})"
     return banner
 
 
@@ -217,6 +219,15 @@ def resolve_hostname(ip: str) -> str:
         return hostname
     except OSError:
         return "Unknown"
+
+
+def parse_http_server(response: str) -> str:
+    """recupere la ligne server de la reponse http"""
+    lines = response.split("\n")
+    for line in lines:
+        if line.lower().startswith("server:"):
+            return line.split(":", 1)[1].strip()
+    return "Unknown"
 
 
 if __name__ == "__main__":
