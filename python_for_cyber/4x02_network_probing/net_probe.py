@@ -11,11 +11,12 @@ from typing import Optional
 
 RANDOM_SCAN = False
 SCAN_DELAY = 0.0
+SOURCE_IP = None
 
 
 def main() -> None:
     """Print pour l'instant le message d'initialisation"""
-    global SCAN_DELAY, RANDOM_SCAN
+    global SCAN_DELAY, RANDOM_SCAN, SOURCE_IP
     parser = argparse.ArgumentParser(
         description="NetProbe - TCP port scanner with banner grabbing"
     )
@@ -28,12 +29,16 @@ def main() -> None:
                         default=0.0, help="Delay between scans in second")
     parser.add_argument("-r", "--random", action="store_true",
                         help="Scan port in random order")
+    parser.add_argument("-i", "--interface", help="Source ip to scan from")
     args = parser.parse_args()
     RANDOM_SCAN = args.random
     SCAN_DELAY = args.delay
+    SOURCE_IP = args.interface
 
     print("NetProbe v1.0 initialized...")
     print(f"Target: {args.target} ({resolve_hostname(args.target)})")
+    if args.interface is not None:
+        print(f"[INFO] Scanning from source IP: {args.interface}")
 
     try:
         start_port, end_port = parse_port_range(args.ports)
@@ -54,14 +59,16 @@ def main() -> None:
 
 def check_port(ip: str, port: int) -> bool:
     """check l'ouverture de ports"""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(1.0)
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(1.0)
+            if SOURCE_IP is not None:
+                s.bind((SOURCE_IP, 0))
 
-        try:
             s.connect((ip, port))
             return True
-        except OSError:
-            return False
+    except OSError:
+        return False
 
 
 def ping_sweep(subnet: str) -> list:
