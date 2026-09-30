@@ -34,7 +34,7 @@ def main() -> None:
 
     print("NetProbe v1.0 initialized...")
     print(f"Target: {args.target} ({resolve_hostname(args.target)})")
-    
+
     try:
         start_port, end_port = parse_port_range(args.ports)
     except ValueError:
