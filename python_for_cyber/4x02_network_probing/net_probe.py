@@ -182,5 +182,26 @@ def save_report(results: list, output_file: str) -> None:
         print(f"[ERROR] Could not write report to {output_file}.")
 
 
+def scan_udp(ip: str, port: int) -> bool:
+    """scan de port udp, true renvoie une reponse, false est fermé"""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.settimeout(1.0)
+            s.sendto(b"", (ip, port))
+            result = s.recvfrom(1024)
+            if result:
+                print("Response received")
+            return True
+    except TimeoutError:
+        print("No response")
+        return True
+    except ConnectionRefusedError:
+        print("Connection refused")
+        return False
+    except OSError:
+        print("Network error")
+        return False
+
+
 if __name__ == "__main__":
     main()
