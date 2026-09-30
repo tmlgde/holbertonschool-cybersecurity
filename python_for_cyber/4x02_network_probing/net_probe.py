@@ -87,6 +87,8 @@ def get_banner(ip: str, port: int) -> str:
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.settimeout(1.0)
+            if SOURCE_IP is not None:
+                s.bind((SOURCE_IP, 0))
             s.connect((ip, port))
             s.sendall(b"HEAD / HTTP/1.0\r\n\r\n")
             banner_data = s.recv(1024)
@@ -195,6 +197,8 @@ def scan_udp(ip: str, port: int) -> bool:
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.settimeout(1.0)
+            if SOURCE_IP is not None:
+                s.bind((SOURCE_IP, 0))
             s.sendto(b"", (ip, port))
             s.recvfrom(1024)
             return True
