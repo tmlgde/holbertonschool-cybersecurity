@@ -188,9 +188,7 @@ def scan_udp(ip: str, port: int) -> bool:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
             s.settimeout(1.0)
             s.sendto(b"", (ip, port))
-            result = s.recvfrom(1024)
-            if result:
-                print("Response received")
+            s.recvfrom(1024)
             return True
     except TimeoutError:
         return True
