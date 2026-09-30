@@ -33,7 +33,8 @@ def main() -> None:
     SCAN_DELAY = args.delay
 
     print("NetProbe v1.0 initialized...")
-
+    print(f"Target: {args.target} ({resolve_hostname(args.target)})")
+    
     try:
         start_port, end_port = parse_port_range(args.ports)
     except ValueError:
@@ -92,8 +93,6 @@ def get_banner(ip: str, port: int) -> str:
 
 def scan_ports(ip: str, start_port: int, end_port: int) -> list:
     """scan les ports avec un scan multi-threadé, 50 workers max"""
-    hostname = resolve_hostname(ip)
-    print(f"Target: {ip} ({hostname})")
     print(f"Scanning {ip} from {start_port} to {end_port}...")
     results = []
     ports = list(range(start_port, end_port + 1))
