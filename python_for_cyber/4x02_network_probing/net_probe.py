@@ -92,6 +92,8 @@ def get_banner(ip: str, port: int) -> str:
 
 def scan_ports(ip: str, start_port: int, end_port: int) -> list:
     """scan les ports avec un scan multi-threadé, 50 workers max"""
+    hostname = resolve_hostname(ip)
+    print(f"Target: {ip} ({hostname})")
     print(f"Scanning {ip} from {start_port} to {end_port}...")
     results = []
     ports = list(range(start_port, end_port + 1))
@@ -196,6 +198,15 @@ def scan_udp(ip: str, port: int) -> bool:
         return False
     except OSError:
         return False
+
+
+def resolve_hostname(ip: str) -> str:
+    """recuper le host name depuis ip"""
+    try:
+        hostname, aliases, addresses = socket.gethostbyaddr(ip)
+        return hostname
+    except OSError:
+        return "Unknown"
 
 
 if __name__ == "__main__":
