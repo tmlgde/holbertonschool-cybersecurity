@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
+import asyncio
 import requests
 import sys
 import subprocess
@@ -85,6 +86,19 @@ async def fetch_api(session, url):
         print("[ERROR] Cannot reach the API server.")
     return {}
 
+
+async def gather_intel(ip):
+    """fonction asynchrone"""
+    async with aiohttp.ClientSession() as session:
+        url_vt = f"http://localhost:5000/virustotal/{ip}"
+        url_ai = f"http://localhost:5000/abuseipdb/{ip}"
+        url_sh = f"http://localhost:5000/shodan/{ip}"
+        results = await asyncio.gather(
+                fetch_api(session, url_vt),
+                fetch_api(session, url_ai),
+                fetch_api(session, url_sh),
+                )
+        return results
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
