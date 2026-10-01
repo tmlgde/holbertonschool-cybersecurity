@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
+import aiohttp
 import asyncio
 import requests
 import sys
-import subprocess
 import xml.etree.ElementTree as ET
 
 
@@ -92,7 +92,7 @@ async def gather_intel(ip):
         return results
 
 
-async def run_nmap_async(ip) -> str:
+async def run_nmap(ip) -> str:
     """run nmap asynchone"""
     process = await asyncio.create_subprocess_exec(
             "nmap", "-p", "22,80", ip, "-oX", "-",
