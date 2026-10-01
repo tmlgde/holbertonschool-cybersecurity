@@ -75,6 +75,17 @@ def parse_nmap_xml(xml_data: str) -> list:
     return open_ports
 
 
+async def fetch_api(session, url):
+    try:
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.json()
+            print("[ERROR] Unexpected status code.")
+    except aiohttp.ClientConnectionError:
+        print("[ERROR] Cannot reach the API server.")
+    return {}
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: ./intel_broker.py <IP>")
