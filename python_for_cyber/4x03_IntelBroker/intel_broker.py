@@ -12,9 +12,8 @@ from datetime import datetime
 
 class TargetDossier:
     """regroupe les infos collectées"""
-
-    def __init__(self, ip: str = "",vt_data: dict = None,
-                 abuse_data: dict = None, 
+    def __init__(self, ip: str = "", vt_data: dict = None,
+                 abuse_data: dict = None,
                  nmap_ports: list = None, shodan_data: dict = None) -> None:
         """def init"""
         self.ip = ip
@@ -51,6 +50,7 @@ class TargetDossier:
             print(f"[+] Report saved to {path}")
         except OSError:
             print("[ERROR] Cannot write the report file.")
+
 
 def query_virustotal(ip: str) -> dict:
     """Interroge VirusTotal (mock) sur une IP.
