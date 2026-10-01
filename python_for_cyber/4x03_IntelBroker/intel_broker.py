@@ -13,9 +13,9 @@ class TargetDossier:
     def __init__(self, ip: str) -> None:
         """def init"""
         self.ip = ip
-        self.vt_data = {}
-        self.abuse_data = {}
-        self.nmap_ports = []
+        self.vt_data = vt_data or {}
+        self.abuse_data = abuse_data or {}
+        self.nmap_ports = nmap_ports or []
 
     def print_summary(self) -> None:
         """Affiche un résumé du dossier."""
