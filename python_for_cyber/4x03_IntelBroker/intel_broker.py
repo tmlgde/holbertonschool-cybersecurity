@@ -10,7 +10,8 @@ class TargetDossier:
 
     """regroupe les infos collectées"""
 
-    def __init__(self, ip: str) -> None:
+    def __init__(self, ip: str, vt_data: dict = None,
+                 abuse_data: dict = None, nmap_ports: list = None) -> None:
         """def init"""
         self.ip = ip
         self.vt_data = vt_data or {}
