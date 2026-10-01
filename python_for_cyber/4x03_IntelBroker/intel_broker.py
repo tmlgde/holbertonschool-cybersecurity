@@ -57,15 +57,6 @@ def query_abuseipdb(ip: str) -> dict:
     return {}
 
 
-def run_nmap(ip: str) -> str:
-    """verifie en direct les ports ouverts ou fermees avec nmap"""
-    command = ["nmap", "-p", "22,80", ip, "-oX", "-"]
-    resultat = subprocess.run(command, capture_output=True, text=True)
-    if resultat.returncode != 0:
-        raise RuntimeError("Nmap scan failed.")
-    return resultat.stdout
-
-
 def parse_nmap_xml(xml_data: str) -> list:
     """Extrait les ports ouverts d'une sortie XML de Nmap."""
     open_ports = []
@@ -101,7 +92,7 @@ async def gather_intel(ip):
         return results
 
 
-async def run_nmap_async(ip):
+async def run_nmap_async(ip) -> str:
     """run nmap asynchone"""
     process = await asyncio.create_subprocess_exec(
             "nmap", "-p", "22,80", ip, "-oX", "-",
@@ -122,7 +113,7 @@ if __name__ == "__main__":
     dossier.vt_data = query_virustotal(dossier.ip)
     dossier.abuse_data = query_abuseipdb(dossier.ip)
     try:
-        dossier.nmap_ports = parse_nmap_xml(run_nmap(dossier.ip))
+        dossier.nmap_ports = parse_nmap_xml(asyncio.run(run_nmap(dossier.ip)))
     except (RuntimeError, FileNotFoundError):
         print("[ERROR] Nmap scan failed.")
     dossier.print_summary()
