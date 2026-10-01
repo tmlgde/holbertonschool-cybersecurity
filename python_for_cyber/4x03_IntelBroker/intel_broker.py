@@ -100,6 +100,19 @@ async def gather_intel(ip):
                 )
         return results
 
+
+async def run_nmap_async(ip):
+    """run nmap asynchone"""
+    process = await asyncio.create_subprocess_exec(
+            "nmap", "-p", "22,80", ip, "-oX", "-",
+            stdout=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await process.communicate()
+    if process.returncode != 0:
+        raise RuntimeError("Nmap scan failed.")
+    return stdout.decode()
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: ./intel_broker.py <IP>")
