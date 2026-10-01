@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
 import requests
+import subprocess
 
 
 def query_virustotal(ip: str) -> dict:
@@ -33,6 +34,19 @@ def query_abuseipdb(ip: str) -> dict:
     return {}
 
 
+def run_nmap(ip: str) -> str:
+    """verifie en direct les ports ouverts ou fermees avec nmap"""
+    command = ["nmap", "-p", "22,80", ip, "-oX", "-"]
+    resultat = subprocess.run(command, capture_output=True, text=True)
+    if resultat.returncode != 0:
+        raise RuntimeError("Nmap scan failed.")
+    return resultat.stdout
+
+
 if __name__ == "__main__":
     print(query_virustotal("1.2.3.4"))
     print(query_abuseipdb("1.2.3.4"))
+    try:
+        print(run_nmap("127.0.0.1"))
+    except (RuntimeError, FileNotFoundError):
+        print("[ERROR] Nmap scan failed.")
