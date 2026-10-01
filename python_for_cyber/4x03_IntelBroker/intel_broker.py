@@ -20,5 +20,19 @@ def query_virustotal(ip: str) -> dict:
     return {}
 
 
+def query_abuseipdb(ip: str) -> dict:
+    """Interroge abuseipdb"""
+    url = f"http://localhost:5000/abuseipdb/{ip}"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.json()
+        print("[ERROR] Unexpected status code.")
+    except requests.exceptions.ConnectionError:
+        print("[ERROR] Cannot reach the API server.")
+    return {}
+
+
 if __name__ == "__main__":
     print(query_virustotal("1.2.3.4"))
+    print(query_abuseipdb("1.2.3.4"))
