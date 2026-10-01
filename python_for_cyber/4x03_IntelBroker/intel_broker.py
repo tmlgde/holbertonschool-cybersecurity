@@ -2,6 +2,7 @@
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
 import requests
 import subprocess
+import xml.etree.ElementTree as ET
 
 
 def query_virustotal(ip: str) -> dict:
@@ -42,6 +43,14 @@ def run_nmap(ip: str) -> str:
         raise RuntimeError("Nmap scan failed.")
     return resultat.stdout
 
+def parse_nmap_xml(xml_data: str) -> list:
+    """Extrait les ports ouverts d'une sortie XML de Nmap."""
+    open_ports = []
+    root = ET.fromstring(xml_data)
+    for port in root.findall("host/ports/port"):
+        if port.find("state").get("state") == "open":
+            open_ports.append(int(port.get("portid")))
+    return open_ports
 
 if __name__ == "__main__":
     print(query_virustotal("1.2.3.4"))
@@ -50,3 +59,4 @@ if __name__ == "__main__":
         print(run_nmap("127.0.0.1"))
     except (RuntimeError, FileNotFoundError):
         print("[ERROR] Nmap scan failed.")
+    print(parse_nmap_xml(run_nmap("127.0.0.1")))
