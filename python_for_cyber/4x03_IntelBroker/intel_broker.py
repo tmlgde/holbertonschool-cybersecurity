@@ -1,8 +1,28 @@
 #!/usr/bin/env python3
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
 import requests
+import sys
 import subprocess
 import xml.etree.ElementTree as ET
+
+
+class TargetDossier:
+
+    """regroupe les infos collectées"""
+
+    def __init__(self, ip: str) -> None:
+        """def init"""
+        self.ip = ip
+        self.vt_data = {}
+        self.abuse_data = {}
+        self.nmap_ports = []
+
+    def print_summary(self) -> None:
+        """Affiche un résumé du dossier."""
+        print(f"Target: {self.ip}")
+        print(f"VirusTotal: {self.vt_data}")
+        print(f"AbuseIPDB: {self.abuse_data}")
+        print(f"Open ports: {self.nmap_ports}")
 
 
 def query_virustotal(ip: str) -> dict:
@@ -55,10 +75,15 @@ def parse_nmap_xml(xml_data: str) -> list:
 
 
 if __name__ == "__main__":
-    print(query_virustotal("1.2.3.4"))
-    print(query_abuseipdb("1.2.3.4"))
+    if len(sys.argv) != 2:
+        print("Usage: ./intel_broker.py <IP>")
+        sys.exit(1)
+
+    dossier = TargetDossier(sys.argv[1])
+    dossier.vt_data = query_virustotal(dossier.ip)
+    dossier.abuse_data = query_abuseipdb(dossier.ip)
     try:
-        print(run_nmap("127.0.0.1"))
+        dossier.nmap_ports = parse_nmap_xml(run_nmap(dossier.ip))
     except (RuntimeError, FileNotFoundError):
         print("[ERROR] Nmap scan failed.")
-    print(parse_nmap_xml(run_nmap("127.0.0.1")))
+    dossier.print_summary()
