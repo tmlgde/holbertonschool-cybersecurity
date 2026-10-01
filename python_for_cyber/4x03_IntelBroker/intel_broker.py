@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """IntelBroker : interroge des API de Threat Intelligence simulées."""
 import aiohttp
+import argparse
 import asyncio
+import json
 import requests
-import sys
 import xml.etree.ElementTree as ET
+
+from datetime import datetime
 
 
 class TargetDossier:
-
     """regroupe les infos collectées"""
 
-    def __init__(self, ip: str = "", vt_data: dict = None,
-                 abuse_data: dict = None, nmap_ports: list = None) -> None:
+    def __init__(self, ip: str = "",vt_data: dict = None,
+                 abuse_data: dict = None, 
+                 nmap_ports: list = None, shodan_data: dict = None) -> None:
         """def init"""
         self.ip = ip
         self.vt_data = vt_data or {}
         self.abuse_data = abuse_data or {}
         self.nmap_ports = nmap_ports or []
+        self.shodan_data = shodan_data or {}
 
     def print_summary(self) -> None:
         """Affiche un résumé du dossier."""
@@ -26,6 +30,27 @@ class TargetDossier:
         print(f"AbuseIPDB: {self.abuse_data}")
         print(f"Open ports: {self.nmap_ports}")
 
+    def to_dict(self) -> dict:
+        """Renvoie le dossier au format du rapport JSON."""
+        return {
+            "target": self.ip,
+            "timestamp": datetime.now().isoformat(),
+            "intelligence": {
+                "virustotal": self.vt_data,
+                "abuseipdb": self.abuse_data,
+                "shodan": self.shodan_data,
+                "nmap": self.nmap_ports,
+            },
+        }
+
+    def save_json(self, path: str) -> None:
+        """Enregistre le dossier dans un fichier JSON"""
+        try:
+            with open(path, "w") as f:
+                json.dump(self.to_dict(), f, indent=4)
+            print(f"[+] Report saved to {path}")
+        except OSError:
+            print("[ERROR] Cannot write the report file.")
 
 def query_virustotal(ip: str) -> dict:
     """Interroge VirusTotal (mock) sur une IP.
@@ -105,15 +130,19 @@ async def run_nmap(ip) -> str:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: ./intel_broker.py <IP>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="IntelBroker")
+    parser.add_argument("ip", help="IP address to investigate")
+    parser.add_argument("-o", "--output", help="Save report to JSON file")
+    args = parser.parse_args()
 
-    dossier = TargetDossier(sys.argv[1])
-    dossier.vt_data = query_virustotal(dossier.ip)
-    dossier.abuse_data = query_abuseipdb(dossier.ip)
+    dossier = TargetDossier(args.ip)
+    results = asyncio.run(gather_intel(dossier.ip))
+    dossier.vt_data, dossier.abuse_data, dossier.shodan_data = results
     try:
-        dossier.nmap_ports = parse_nmap_xml(asyncio.run(run_nmap(dossier.ip)))
+        xml_data = asyncio.run(run_nmap(dossier.ip))
+        dossier.nmap_ports = parse_nmap_xml(xml_data)
     except (RuntimeError, FileNotFoundError):
         print("[ERROR] Nmap scan failed.")
     dossier.print_summary()
+    if args.output:
+        dossier.save_json(args.output)

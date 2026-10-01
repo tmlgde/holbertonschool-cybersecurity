@@ -1,0 +1,27 @@
+{
+    "target": "127.0.0.1",
+    "timestamp": "2026-10-01T13:50:26.852061",
+    "intelligence": {
+        "virustotal": {
+            "ip": "127.0.0.1",
+            "reputation_score": 4,
+            "malicious": false
+        },
+        "abuseipdb": {
+            "ip": "127.0.0.1",
+            "abuse_confidence_score": 57,
+            "reports": 20
+        },
+        "shodan": {
+            "ip": "127.0.0.1",
+            "ports": [
+                22,
+                443,
+                80
+            ],
+            "os": "Linux",
+            "isp": "CloudNet"
+        },
+        "nmap": []
+    }
+}
