@@ -107,7 +107,12 @@ async def fetch_api(session, url):
 
 async def gather_intel(ip):
     """fonction asynchrone"""
+    semaphore = asyncio.Semaphore (5)
     async with aiohttp.ClientSession() as session:
+        async def limited_fetch(url: str) -> dict:
+            """Interroge une API en respectant la limite de 5"""
+            async with semaphore:
+                return await fetch_api(session, url)
         url_vt = f"http://localhost:5000/virustotal/{ip}"
         url_ai = f"http://localhost:5000/abuseipdb/{ip}"
         url_sh = f"http://localhost:5000/shodan/{ip}"
