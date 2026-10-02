@@ -80,7 +80,7 @@ def query_abuseipdb(ip: str) -> dict:
         if response.status_code == 200:
             return response.json()
         print("[ERROR] Unexpected status code.")
-    except requests.exceptions.ConnectionError:
+    except RequestException:
         print("[ERROR] API unavailable.")
     return {"error": "Unavailable"}
 
