@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """IntelBroker : point d'entrée de l'outil de reconnaissance."""
+import aiohttp
+import requests
 import argparse
 import asyncio
 
