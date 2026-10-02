@@ -13,7 +13,7 @@ from datetime import datetime
 
 class TargetDossier:
     """regroupe les infos collectées"""
-    def __init__(self, ip: str = "", 
+    def __init__(self, ip: str = "",
                  vt_data: dict = None,
                  abuse_data: dict = None,
                  nmap_ports: list = None, shodan_data: dict = None) -> None:
