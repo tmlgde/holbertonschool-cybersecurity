@@ -1,26 +1,15 @@
 {
     "127.0.0.1": {
-        "timestamp": 1790926396.9438095,
+        "timestamp": 1790933496.1654015,
         "data": [
             {
-                "ip": "127.0.0.1",
-                "reputation_score": 3,
-                "malicious": false
+                "error": "Unavailable"
             },
             {
-                "ip": "127.0.0.1",
-                "abuse_confidence_score": 68,
-                "reports": 41
+                "error": "Unavailable"
             },
             {
-                "ip": "127.0.0.1",
-                "ports": [
-                    443,
-                    8080,
-                    22
-                ],
-                "os": "Linux",
-                "isp": "CloudNet"
+                "error": "Unavailable"
             }
         ]
     }

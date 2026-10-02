@@ -80,7 +80,7 @@ def query_abuseipdb(ip: str) -> dict:
         if response.status_code == 200:
             return response.json()
         print("[ERROR] Unexpected status code.")
-    except except requests.exceptions.RequestException:
+    except requests.exceptions.RequestException:
         print("[ERROR] API unavailable.")
     return {"error": "Unavailable"}
 
@@ -118,9 +118,9 @@ async def gather_intel(ip):
         url_ai = f"http://localhost:5000/abuseipdb/{ip}"
         url_sh = f"http://localhost:5000/shodan/{ip}"
         results = await asyncio.gather(
-                limited_fetch(session, url_vt),
-                limited_fetch(session, url_ai),
-                limited_fetch(session, url_sh),
+                limited_fetch(url_vt),
+                limited_fetch(url_ai),
+                limited_fetch(url_sh),
                 )
         return results
 
@@ -176,16 +176,24 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="IntelBroker")
     parser.add_argument("ip", help="IP address to investigate")
     parser.add_argument("-o", "--output", help="Save report to JSON file")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="Print action from IntelBroker")
     args = parser.parse_args()
 
     dossier = TargetDossier(args.ip)
+    if args.verbose:
+        print("[+] Querying VirusTotal...")
     results = get_intel(dossier.ip)
     dossier.vt_data, dossier.abuse_data, dossier.shodan_data = results
     try:
         xml_data = asyncio.run(run_nmap(dossier.ip))
         dossier.nmap_ports = parse_nmap_xml(xml_data)
+        if args.verbose:
+            print("[+] Nmap finished.")
     except (RuntimeError, FileNotFoundError):
         print("[ERROR] Nmap scan failed.")
     dossier.print_summary()
     if args.output:
         dossier.save_json(args.output)
+        if args.verbose:
+            print("[SUCCESS] Report generated.")
