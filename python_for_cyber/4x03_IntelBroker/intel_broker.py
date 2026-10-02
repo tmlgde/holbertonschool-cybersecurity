@@ -80,7 +80,7 @@ def query_abuseipdb(ip: str) -> dict:
         if response.status_code == 200:
             return response.json()
         print("[ERROR] Unexpected status code.")
-    except RequestException:
+    except except requests.exceptions.RequestException:
         print("[ERROR] API unavailable.")
     return {"error": "Unavailable"}
 
@@ -118,9 +118,9 @@ async def gather_intel(ip):
         url_ai = f"http://localhost:5000/abuseipdb/{ip}"
         url_sh = f"http://localhost:5000/shodan/{ip}"
         results = await asyncio.gather(
-                fetch_api(session, url_vt),
-                fetch_api(session, url_ai),
-                fetch_api(session, url_sh),
+                limited_fetch(session, url_vt),
+                limited_fetch(session, url_ai),
+                limited_fetch(session, url_sh),
                 )
         return results
 
