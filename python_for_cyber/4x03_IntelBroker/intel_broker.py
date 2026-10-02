@@ -27,9 +27,9 @@ class TargetDossier:
     def print_summary(self) -> None:
         """Affiche un résumé du dossier."""
         print(f"Target: {self.ip}")
-        print(f"VirusTotal: {self.vt_data}")
-        print(f"AbuseIPDB: {self.abuse_data}")
-        print(f"Open ports: {self.nmap_ports}")
+        print(f"VirusTotal: {self.vt_data.get('error', self.vt_data)}")
+        print(f"AbuseIPDB: {self.abuse_data.get('error', self.abuse_data)}")
+        print(f"Shodan: {self.shodan_data.get('error', self.shodan_data)}")          print(f"Open ports: {self.nmap_ports}")
 
     def to_dict(self) -> dict:
         """Renvoie le dossier au format du rapport JSON."""
@@ -100,8 +100,8 @@ async def fetch_api(session, url):
             if response.status == 200:
                 return await response.json()
             print("[ERROR] Unexpected status code.")
-    except aiohttp.ClientConnectionError:
-        print("[ERROR] Cannot reach the API server.")
+    except Exception:
+        print("[ERROR] API Unavailable.")
     return {"error": "Unavailable"}
 
 
