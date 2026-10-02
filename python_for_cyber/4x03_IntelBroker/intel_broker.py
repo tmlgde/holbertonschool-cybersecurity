@@ -67,9 +67,9 @@ def query_virustotal(ip: str) -> dict:
         if response.status_code == 200:
             return response.json()
         print("[ERROR] Unexpected status code.")
-    except requests.exceptions.ConnectionError:
-        print("[ERROR] Cannot reach the API server.")
-    return {}
+    except requests.exceptions.RequestException:
+        print("[ERROR] API unavailable.")
+    return {"error": "Unavailable"}
 
 
 def query_abuseipdb(ip: str) -> dict:
@@ -81,8 +81,8 @@ def query_abuseipdb(ip: str) -> dict:
             return response.json()
         print("[ERROR] Unexpected status code.")
     except requests.exceptions.ConnectionError:
-        print("[ERROR] Cannot reach the API server.")
-    return {}
+        print("[ERROR] API unavailable.")
+    return {"error": "Unavailable"}
 
 
 def parse_nmap_xml(xml_data: str) -> list:
