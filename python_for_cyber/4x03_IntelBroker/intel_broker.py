@@ -102,7 +102,7 @@ async def fetch_api(session, url):
             print("[ERROR] Unexpected status code.")
     except aiohttp.ClientConnectionError:
         print("[ERROR] Cannot reach the API server.")
-    return {}
+    return {"error": "Unavailable"}
 
 
 async def gather_intel(ip):
