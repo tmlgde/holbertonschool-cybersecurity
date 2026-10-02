@@ -5,6 +5,7 @@ import argparse
 import asyncio
 import json
 import requests
+import time
 import xml.etree.ElementTree as ET
 
 from datetime import datetime
@@ -12,7 +13,8 @@ from datetime import datetime
 
 class TargetDossier:
     """regroupe les infos collectées"""
-    def __init__(self, ip: str = "", vt_data: dict = None,
+    def __init__(self, ip: str = "", 
+                 vt_data: dict = None,
                  abuse_data: dict = None,
                  nmap_ports: list = None, shodan_data: dict = None) -> None:
         """def init"""
@@ -129,6 +131,41 @@ async def run_nmap(ip) -> str:
     return stdout.decode()
 
 
+def load_cache() -> dict:
+    """charge le cache"""
+    try:
+        with open("cache.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def save_cache(cache: dict) -> None:
+    """sauvegarde le cache dans cache.json"""
+    try:
+        with open("cache.json", "w") as f:
+            json.dump(cache, f, indent=4)
+    except OSError:
+        print("[ERROR] Cannot write the cache file")
+
+
+def get_intel(ip: str) -> list:
+    """Renvoie les données des 3 API, en passant par le cache.
+
+    Entrée : l'adresse IP à analyser.
+    Sortie : la liste [vt, abuse, shodan], depuis le cache si elle
+    a moins d'une heure, sinon depuis les API.
+    """
+    cache = load_cache()
+    entry = cache.get(ip)
+    if entry and time.time() - entry["timestamp"] < 3600:
+        return entry["data"]
+    data = asyncio.run(gather_intel(ip))
+    cache[ip] = {"timestamp": time.time(), "data": data}
+    save_cache(cache)
+    return data
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="IntelBroker")
     parser.add_argument("ip", help="IP address to investigate")
@@ -136,7 +173,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     dossier = TargetDossier(args.ip)
-    results = asyncio.run(gather_intel(dossier.ip))
+    results = get_intel(dossier.ip)
     dossier.vt_data, dossier.abuse_data, dossier.shodan_data = results
     try:
         xml_data = asyncio.run(run_nmap(dossier.ip))
