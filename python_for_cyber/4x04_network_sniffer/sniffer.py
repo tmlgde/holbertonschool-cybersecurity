@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Création d'un outil qui marche comme Wireshark"""
 
-from scapy.all import sniff, IP, TCP, UDP, ICMP
+from scapy.all import sniff
 
 
 def main() -> None:
@@ -14,6 +14,7 @@ def main() -> None:
 
 def packet_handler(packet) -> None:
     """Print une seule ligne pour packet.summary"""
+    from scappy.all import IP, TCP, UDP, ICMP
     if packet.haslayer(IP):
         ip_src = packet[IP].src
         ip_dst = packet[IP].dst
