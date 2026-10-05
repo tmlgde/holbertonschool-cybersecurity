@@ -5,8 +5,11 @@ from scapy.all import sniff, IP, TCP, UDP, ICMP
 
 
 def main() -> None:
-    """Fonction main du projet"""
-    sniff(count=5, prn=packet_handler)
+    """Fonction main du projet. Capture le message d'erreur avec un print"""
+    try:
+        sniff(prn=packet_handler, chainCC=True)
+    except KeyboardInterrupt:
+        print("[INFO] Stopping capture...")
 
 
 def packet_handler(packet) -> None:
