@@ -2,7 +2,6 @@
 """Création d'un outil qui marche comme Wireshark"""
 
 from scapy.all import sniff
-from scapy.packet import Packet
 
 
 def main() -> None:
@@ -10,7 +9,7 @@ def main() -> None:
     sniff(count=5, prn=packet_handler)
 
 
-def packet_handler(packet: Packet) -> None:
+def packet_handler(packet) -> None:
     """Print une seule ligne pour packet.summary"""
     print(packet.summary())
 
