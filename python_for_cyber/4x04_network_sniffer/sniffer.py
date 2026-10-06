@@ -31,13 +31,13 @@ def main() -> None:
 
 def packet_handler(packet) -> None:
     """Print une seule ligne pour packet.summary"""
-    from scapy.all import IP, TCP, UDP, ICMP
     if output_file is not None:
         from scapy.all import wrpcap
         try:
             wrpcap(output_file, packet, append=True)
         except OSError as error:
             print(f"[ERROR] Cannot write to output file: {error}")
+    from scapy.all import IP, TCP, UDP, ICMP
     if packet.haslayer(IP):
         ip_src = packet[IP].src
         ip_dst = packet[IP].dst
