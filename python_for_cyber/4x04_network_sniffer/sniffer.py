@@ -71,8 +71,8 @@ class TCPProcessor(PacketProcessor):
         ip_src = packet[scapy_all.IP].src
         ip_dst = packet[scapy_all.IP].dst
         tcp_flags = getattr(packet[scapy_all.TCP], "flags", "")
-        src_port = packet[scapy_all.TCP].sport
-        dst_port = packet[scapy_all.TCP].dport
+        src_port = getattr(packet[scapy_all.TCP], "flags", "")
+        dst_port = getattr(packet[scapy_all.TCP], "flags", "")
         print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
               f" | Flags: {tcp_flags}")
 
