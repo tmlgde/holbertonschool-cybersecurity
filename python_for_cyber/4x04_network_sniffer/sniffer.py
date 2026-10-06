@@ -18,6 +18,7 @@ class Sniffer:
         self.verbose = verbose
         self.processors = [TCPProcessor(), UDPProcessor(), ICMPProcessor()]
         self.search = search
+        self.stats = {'TCP': 0, 'UDP': 0, 'ICMP': 0}
 
     def start(self) -> None:
         """fonction main déplacée"""
@@ -26,6 +27,7 @@ class Sniffer:
                   prn=self._process_packet, chainCC=True)
         except KeyboardInterrupt:
             print("[INFO] Stopping capture...")
+            self._print_stats()
         except ValueError as error:
             print(f"[ERROR] Invalid interface: {error}")
         except Exception as error:
@@ -42,12 +44,18 @@ class Sniffer:
             if packet.haslayer(scapy_all.IP):
                 for processor in self.processors:
                     if processor.matches(packet):
+                        self.stats[processor.name] += 1
                         processor.process(packet)
                         break
         finally:
             self._search_payload(packet)
             if self.verbose:
                 scapy_all.hexdump(packet)
+
+    def _print_stats(self) -> None:
+        """print le resultat en parcourant le dict"""
+        for protocol, count in self.stats.items():
+            print(f"{protocol}: {count}")
 
     def _search_payload(self, packet) -> None:
         """Verifie la couche Raw"""
@@ -77,6 +85,8 @@ class PacketProcessor:
 class TCPProcessor(PacketProcessor):
     """Traite les paquets TCP"""
 
+    name = "TCP"
+
     def matches(self, packet) -> bool:
         """Renvoie True si le paquet contient tcp"""
         return packet.haslayer(scapy_all.TCP)
@@ -95,6 +105,8 @@ class TCPProcessor(PacketProcessor):
 class UDPProcessor(PacketProcessor):
     """Traites les paquets UDP"""
 
+    name = "UDP"
+
     def matches(self, packet) -> bool:
         """Renvoie true si le paquet contient UDP"""
         return packet.haslayer(scapy_all.UDP)
@@ -108,6 +120,8 @@ class UDPProcessor(PacketProcessor):
 
 class ICMPProcessor(PacketProcessor):
     """Traite les données ICMP"""
+
+    name = "ICMP"
 
     def matches(self, packet) -> bool:
         """Renvoie True si le paquet contient ICMP"""
