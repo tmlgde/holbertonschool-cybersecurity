@@ -40,7 +40,8 @@ class Sniffer:
                 ip_src = packet[scapy_all.IP].src
                 ip_dst = packet[scapy_all.IP].dst
                 if packet.haslayer(scapy_all.TCP):
-                    tcp_flags = packet[scapy_all.TCP].flags
+                    tcp_flags = getattr(packet[scapy_all.TCP].flags,
+                                        "flags", "")
                     src_port = packet[scapy_all.TCP].sport
                     dst_port = packet[scapy_all.TCP].dport
                     print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
