@@ -2,6 +2,7 @@
 """Création d'un outil qui marche comme Wireshark"""
 
 import argparse
+import scapy.all as scapy_all
 from scapy.all import sniff
 
 
@@ -15,7 +16,7 @@ class Sniffer:
         self.output_file = output_file
         self.verbose = verbose
 
-    def start(self):
+    def start(self) -> None:
         """fonction main déplacée"""
         try:
             sniff(iface=self.interface, filter=self.filter_str,
@@ -30,30 +31,27 @@ class Sniffer:
     def _process_packet(self, packet) -> None:
         """Print une seule ligne pour packet.summary"""
         if self.output_file is not None:
-            from scapy.all import wrpcap
             try:
-                wrpcap(self.output_file, packet, append=True)
+                scapy_all.wrpcap(self.output_file, packet, append=True)
             except OSError as error:
                 print(f"[ERROR] Cannot write to output file: {error}")
         try:
-            from scapy.all import IP, TCP, UDP, ICMP
-            if packet.haslayer(IP):
-                ip_src = packet[IP].src
-                ip_dst = packet[IP].dst
-                if packet.haslayer(TCP):
-                    tcp_flags = packet[TCP].flags
-                    src_port = packet[TCP].sport
-                    dst_port = packet[TCP].dport
-                    print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}",
+            if packet.haslayer(scapy_all.IP):
+                ip_src = packet[scapy_all.IP].src
+                ip_dst = packet[scapy_all.IP].dst
+                if packet.haslayer(scapy_all.TCP):
+                    tcp_flags = packet[scapy_all.TCP].flags
+                    src_port = packet[scapy_all.TCP].sport
+                    dst_port = packet[scapy_all.TCP].dport
+                    print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
                           f" | Flags: {tcp_flags}")
-                elif packet.haslayer(UDP):
+                elif packet.haslayer(scapy_all.UDP):
                     print(f"[UDP] {ip_src} -> {ip_dst}")
-                elif packet.haslayer(ICMP):
+                elif packet.haslayer(scapy_all.ICMP):
                     print(f"[ICMP] {ip_src} -> {ip_dst}")
         finally:
             if self.verbose:
-                from scapy.all import hexdump
-                hexdump(packet)
+                scapy_all.hexdump(packet)
 
 
 def main() -> None:
