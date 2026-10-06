@@ -18,8 +18,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.write:
         try:
-            from scapy.all import PcapWriter
-            pcap_writer = PcapWriter(args.write, append=True)
+            from scapy.utils import PcapWriter
+            pcap_writer = PcapWriter(args.write, append=True, sync=True)
         except OSError as error:
             print(f"[ERROR] Cannot open output file: {error}")
             return
