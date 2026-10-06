@@ -5,18 +5,22 @@ import argparse
 from scapy.all import sniff
 
 output_file = None
+show_hexdump = False
 
 
 def main() -> None:
     """Fonction main du projet. Capture le message d'erreur avec un print"""
-    global output_file
+    global output_file, show_hexdump
     parser = argparse.ArgumentParser(description="Sniffer")
     parser.add_argument("-f", "--filter", help="Filter from packet")
     parser.add_argument("-i", "--interface", help="Interface to sniff")
     parser.add_argument("-w", "--write",
                         help="File .pcap for save packets")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="Print the hexdump of each packet")
     args = parser.parse_args()
     output_file = args.write
+    show_hexdump = args.verbose
 
     try:
         sniff(iface=args.interface, filter=args.filter,
@@ -51,6 +55,9 @@ def packet_handler(packet) -> None:
             print(f"[UDP] {ip_src} -> {ip_dst}")
         elif packet.haslayer(ICMP):
             print(f"[ICMP] {ip_src} -> {ip_dst}")
+    if show_hexdump:
+        from scapy.all import hexdump
+        hexdump(packet)
 
 
 if __name__ == "__main__":
