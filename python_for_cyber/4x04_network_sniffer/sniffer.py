@@ -15,6 +15,7 @@ class Sniffer:
         self.interface = interface
         self.output_file = output_file
         self.verbose = verbose
+        self.processors = [TCPProcessor(), UDPProcessor(), ICMPProcessor()]
 
     def start(self) -> None:
         """fonction main déplacée"""
@@ -37,24 +38,71 @@ class Sniffer:
                 print(f"[ERROR] Cannot write to output file: {error}")
         try:
             if packet.haslayer(scapy_all.IP):
-                ip_src = packet[scapy_all.IP].src
-                ip_dst = packet[scapy_all.IP].dst
-                if packet.haslayer(scapy_all.TCP):
-                    tcp_flags = getattr(packet[scapy_all.TCP],
-                                        "flags", "")
-                    src_port = getattr(packet[scapy_all.TCP],
-                                       "flags", "")
-                    dst_port = getattr(packet[scapy_all.TCP],
-                                       "flags", "")
-                    print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
-                          f" | Flags: {tcp_flags}")
-                elif packet.haslayer(scapy_all.UDP):
-                    print(f"[UDP] {ip_src} -> {ip_dst}")
-                elif packet.haslayer(scapy_all.ICMP):
-                    print(f"[ICMP] {ip_src} -> {ip_dst}")
+                for processor in self.processors:
+                    if processor.matches(packet):
+                        processor.process(packet)
+                        break
         finally:
             if self.verbose:
                 scapy_all.hexdump(packet)
+
+
+class PacketProcessor:
+    """CLasse de base pour traiter un type de paquet"""
+
+    def matches(self, packet) -> bool:
+        """Indique si ce processeur gère ce paquet"""
+        raise NotImplementedError
+
+    def process(self, packet) -> None:
+        """Affiche la ligne du résumé du paquet"""
+        raise NotImplementedError
+
+
+class TCPProcessor(PacketProcessor):
+    """Traite les paquets TCP"""
+
+    def matches(self, packet) -> bool:
+        """Renvoie True si le paquet contient tcp"""
+        return packet.haslayer(scapy_all.TCP)
+
+    def process(self, packet) -> None:
+        """Affiche "[TCP] SRC:PORT -> DST:PORT | Flags: X"."""
+        ip_src = packet[scapy_all.IP].src
+        ip_dst = packet[scapy_all.IP].dst
+        tcp_flags = getattr(packet[scapy_all.TCP], "flags", "")
+        src_port = packet[scapy_all.TCP].sport
+        dst_port = packet[scapy_all.TCP].dport
+        print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
+              f" | Flags: {tcp_flags}")
+
+
+class UDPProcessor(PacketProcessor):
+    """Traites les paquets UDP"""
+
+    def matches(self, packet) -> bool:
+        """Renvoie true si le paquet contient UDP"""
+        return packet.haslayer(scapy_all.UDP)
+
+    def process(self, packet) -> None:
+        """Affiche les lignes UDP"""
+        ip_src = packet[scapy_all.IP].src
+        ip_dst = packet[scapy_all.IP].dst
+        print(f"[UDP] {ip_src} -> {ip_dst}")
+
+
+class ICMPProcessor(PacketProcessor):
+    """Traite les données ICMP"""
+
+    def matches(self, packet) -> bool:
+        """Renvoie True si le paquet contient ICMP"""
+        return packet.haslayer(scapy_all.ICMP)
+
+    def process(self, packet) -> None:
+        """Affiche les lignes ICMP"""
+        ip_src = packet[scapy_all.IP].src
+        ip_dst = packet[scapy_all.IP].dst
+        print(f"[ICMP] {ip_src} -> {ip_dst}")
 
 
 def main() -> None:
