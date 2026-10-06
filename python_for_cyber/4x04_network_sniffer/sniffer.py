@@ -41,23 +41,25 @@ def packet_handler(packet) -> None:
             wrpcap(output_file, packet, append=True)
         except OSError as error:
             print(f"[ERROR] Cannot write to output file: {error}")
-    from scapy.all import IP, TCP, UDP, ICMP
-    if packet.haslayer(IP):
-        ip_src = packet[IP].src
-        ip_dst = packet[IP].dst
-        if packet.haslayer(TCP):
-            tcp_flags = packet[TCP].flags
-            src_port = packet[TCP].sport
-            dst_port = packet[TCP].dport
-            print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
-                  f" | Flags: {tcp_flags}")
-        elif packet.haslayer(UDP):
-            print(f"[UDP] {ip_src} -> {ip_dst}")
-        elif packet.haslayer(ICMP):
-            print(f"[ICMP] {ip_src} -> {ip_dst}")
-    if show_hexdump:
-        from scapy.all import hexdump
-        hexdump(packet)
+    try:
+        from scapy.all import IP, TCP, UDP, ICMP
+        if packet.haslayer(IP):
+            ip_src = packet[IP].src
+            ip_dst = packet[IP].dst
+            if packet.haslayer(TCP):
+                tcp_flags = packet[TCP].flags
+                src_port = packet[TCP].sport
+                dst_port = packet[TCP].dport
+                print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
+                      f" | Flags: {tcp_flags}")
+            elif packet.haslayer(UDP):
+                print(f"[UDP] {ip_src} -> {ip_dst}")
+            elif packet.haslayer(ICMP):
+                print(f"[ICMP] {ip_src} -> {ip_dst}")
+    finally:
+        if show_hexdump:
+            from scapy.all import hexdump
+            hexdump(packet)
 
 
 if __name__ == "__main__":
