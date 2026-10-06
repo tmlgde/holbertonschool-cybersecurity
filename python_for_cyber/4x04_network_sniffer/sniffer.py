@@ -9,13 +9,15 @@ from scapy.all import sniff
 class Sniffer:
     """classe sniffer qui regroupe tout le code"""
 
-    def __init__(self, interface, filter_str, output_file, verbose=False):
+    def __init__(self, interface, filter_str, output_file, verbose=False,
+                 search=None):
         """fonction constructeur"""
         self.filter_str = filter_str
         self.interface = interface
         self.output_file = output_file
         self.verbose = verbose
         self.processors = [TCPProcessor(), UDPProcessor(), ICMPProcessor()]
+        self.search = search
 
     def start(self) -> None:
         """fonction main déplacée"""
@@ -43,8 +45,21 @@ class Sniffer:
                         processor.process(packet)
                         break
         finally:
+            self._search_payload(packet)
             if self.verbose:
                 scapy_all.hexdump(packet)
+
+    def _search_payload(self, packet) -> None:
+        """Verifie la couche Raw"""
+        if self.search is None:
+            return
+        if not packet.haslayer(scapy_all.Raw):
+            return
+        payload = getattr(packet[scapy_all.Raw], "load", b"")
+        if isinstance(payload, bytes):
+            payload = payload.decode("utf-8", errors="ignore")
+        if self.search in payload:
+            print("[ALERT] Payload Match found!")
 
 
 class PacketProcessor:
@@ -71,8 +86,8 @@ class TCPProcessor(PacketProcessor):
         ip_src = packet[scapy_all.IP].src
         ip_dst = packet[scapy_all.IP].dst
         tcp_flags = getattr(packet[scapy_all.TCP], "flags", "")
-        src_port = getattr(packet[scapy_all.TCP], "flags", "")
-        dst_port = getattr(packet[scapy_all.TCP], "flags", "")
+        src_port = getattr(packet[scapy_all.TCP], "sport", "")
+        dst_port = getattr(packet[scapy_all.TCP], "dport", "")
         print(f"[TCP] {ip_src}:{src_port} -> {ip_dst}:{dst_port}"
               f" | Flags: {tcp_flags}")
 
@@ -115,8 +130,10 @@ def main() -> None:
                         help="File .pcap for save packets")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Print the hexdump of each packet")
+    parser.add_argument("-s", "--search", help="Search raw for DPI")
     args = parser.parse_args()
-    sniffer = Sniffer(args.interface, args.filter, args.write, args.verbose)
+    sniffer = Sniffer(args.interface, args.filter, args.write, args.verbose,
+                      args.search)
     sniffer.start()
 
 
