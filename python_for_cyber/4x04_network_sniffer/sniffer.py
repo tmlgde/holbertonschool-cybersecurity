@@ -4,6 +4,8 @@
 import argparse
 import scapy.all as scapy_all
 from scapy.all import sniff
+import queue
+import threading
 
 
 class Sniffer:
@@ -19,19 +21,28 @@ class Sniffer:
         self.processors = [TCPProcessor(), UDPProcessor(), ICMPProcessor()]
         self.search = search
         self.stats = {'TCP': 0, 'UDP': 0, 'ICMP': 0}
+        self.packet_queue = queue.Queue()
 
     def start(self) -> None:
         """fonction main déplacée"""
+        worker = threading.Thread(target=self._worker)
+        worker.start()
+        interrupted = False
         try:
             sniff(iface=self.interface, filter=self.filter_str,
-                  prn=self._process_packet, chainCC=True)
+                  prn=self._enqueue_packet, chainCC=True)
         except KeyboardInterrupt:
-            print("[INFO] Stopping capture...")
-            self._print_stats()
+            interrupted = True
         except ValueError as error:
             print(f"[ERROR] Invalid interface: {error}")
         except Exception as error:
             print(f"[ERROR] Capture failed: {error}")
+        finally:
+            self.packet_queue.put(None)
+            worker.join()
+        if interrupted:
+            print("[INFO] Stopping capture...")
+            self._print_stats()
 
     def _process_packet(self, packet) -> None:
         """Print une seule ligne pour packet.summary"""
@@ -68,6 +79,21 @@ class Sniffer:
             payload = payload.decode("utf-8", errors="ignore")
         if self.search in payload:
             print("[ALERT] Payload Match found!")
+
+    def _enqueue_packet(self, packet) -> None:
+        """prend un paquet et le pose dans la file"""
+        self.packet_queue.put(packet)
+
+    def _worker(self) -> None:
+        """traite les paquets en boucle"""
+        while True:
+            packet = self.packet_queue.get()
+            if packet is None:
+                break
+            try:
+                self._process_packet(packet)
+            except Exception as error:
+                print(f"[ERROR] Packet processing failed: {error}")
 
 
 class PacketProcessor:
