@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Création d'un outil qui marche comme Wireshark"""
+# pylint: disable=no-member
 
 import argparse
-import scapy.all as scapy_all
-from scapy.all import sniff
 import queue
 import threading
+import scapy.all as scapy_all
+from scapy.all import sniff
 
 
 class Sniffer:
