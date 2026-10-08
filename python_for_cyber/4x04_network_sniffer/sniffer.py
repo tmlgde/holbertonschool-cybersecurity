@@ -119,8 +119,8 @@ class TCPProcessor(PacketProcessor):
 
     def process(self, packet) -> None:
         """Affiche "[TCP] SRC:PORT -> DST:PORT | Flags: X"."""
-        ip_src = packet[scapy_all.IP].src
-        ip_dst = packet[scapy_all.IP].dst
+        ip_src = getattr(packet[scapy_all.IP], "src", "")
+        ip_dst = getattr(packet[scapy_all.IP], "dst", "")
         tcp_flags = getattr(packet[scapy_all.TCP], "flags", "")
         src_port = getattr(packet[scapy_all.TCP], "sport", "")
         dst_port = getattr(packet[scapy_all.TCP], "dport", "")
