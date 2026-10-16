@@ -17,12 +17,17 @@ if [ -n "$dpkg_proc" ]; then
 else
     echo "  dpkg processes: None"
 fi
-if [ -n "$apt_proc" ] || [ -n "$dpkg_proc" ]; then
+
+# Vérifier si un processus tient réellement les fichiers lock
+lock_holders=$(fuser /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock 2>/dev/null)
+
+if [ -n "$apt_proc" ] || [ -n "$dpkg_proc" ] || [ -n "$lock_holders" ]; then
     echo ""
     echo "ERROR: Active package operations detected. Aborting."
     echo "Do not remove locks while processes are running."
     exit 1
 fi
+
 echo ""
 echo "Removing stale lock files..."
 for lock in /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lock /var/cache/apt/archives/lock; do
@@ -33,6 +38,7 @@ for lock in /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock /var/lib/apt/lists/lo
         echo "  $lock: Not present"
     fi
 done
+
 echo ""
 echo "Verification:"
 if [ ! -f /var/lib/dpkg/lock-frontend ] && [ ! -f /var/lib/dpkg/lock ]; then
