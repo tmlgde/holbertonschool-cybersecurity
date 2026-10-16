@@ -7,19 +7,18 @@ case "$ACTION" in
     list)
         echo "=== Package Hold Registry ==="
         echo ""
+        held_packages=$(apt-mark showhold 2>/dev/null)
         printf "%-16s %-12s %-12s %-5s %s\n" "Package" "Version" "Held Since" "Days" "Reason"
-        
+
         total=0
         old=0
         if [ -f "$LOG" ]; then
             while IFS='|' read -r timestamp pkg version reason; do
-                # Nettoyer les espaces
                 timestamp=$(echo "$timestamp" | xargs)
                 pkg=$(echo "$pkg" | xargs)
                 version=$(echo "$version" | xargs)
                 reason=$(echo "$reason" | xargs)
                 held_date=$(echo "$timestamp" | awk '{print $1}')
-                # Calculer l'âge en jours
                 days=$(( ( $(date +%s) - $(date -d "$held_date" +%s) ) / 86400 ))
                 printf "%-16s %-12s %-12s %-5s %s\n" "$pkg" "$version" "$held_date" "$days" "$reason"
                 total=$((total + 1))
