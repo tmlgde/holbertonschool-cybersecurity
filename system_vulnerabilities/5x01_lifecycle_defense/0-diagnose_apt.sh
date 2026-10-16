@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "=== APT/DPKG Diagnostic ==="
 echo ""
 echo "Lock files:"
