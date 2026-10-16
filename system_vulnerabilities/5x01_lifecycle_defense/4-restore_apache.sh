@@ -2,7 +2,7 @@
 echo "=== Apache Recovery ==="
 echo ""
 echo "Configuration test..."
-if sudo apache2ctl configtest 2>&1 | grep -q "Syntax OK"; then
+if sudo apache2ctl -t configtest 2>&1 | grep -q "Syntax OK"; then
     echo "  Syntax: OK"
 else
     echo "  Syntax: ERROR"
