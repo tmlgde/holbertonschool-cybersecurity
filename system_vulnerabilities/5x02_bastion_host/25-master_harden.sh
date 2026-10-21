@@ -19,7 +19,6 @@ harden_kernel() {
     log "=== Hardening kernel parameters ==="
     local conf="/etc/sysctl.d/99-hardening.conf"
     sudo touch "$conf"
-    # Liste des paramètres (param=valeur)
     local params="net.ipv4.ip_forward=0 net.ipv6.conf.all.forwarding=0 net.ipv4.conf.all.accept_redirects=0 net.ipv4.conf.all.send_redirects=0 net.ipv4.conf.all.rp_filter=1 net.ipv4.tcp_syncookies=1 net.ipv4.conf.all.accept_source_route=0 net.ipv4.icmp_echo_ignore_broadcasts=1"
     for pv in $params; do
         local p="${pv%%=*}"
@@ -43,7 +42,19 @@ minimize_services() {
     done
 }
 
-# --- Module 3 : Verrouillage root ---
+# --- Module 3 : Suppression des compilateurs ---
+remove_compilers() {
+    log "=== Removing development tools ==="
+    for pkg in gcc g++ make gdb; do
+        if dpkg -l "$pkg" 2>/dev/null | grep -q '^ii'; then
+            sudo apt-get remove -y "$pkg" >/dev/null 2>&1
+            log "Removed $pkg"
+        fi
+    done
+    sudo apt-get autoremove -y >/dev/null 2>&1
+}
+
+# --- Module 4 : Verrouillage root ---
 lock_root() {
     log "=== Locking root account ==="
     if sudo -l >/dev/null 2>&1; then
@@ -52,7 +63,7 @@ lock_root() {
     fi
 }
 
-# --- Module 4 : Bannière légale ---
+# --- Module 5 : Banniere legale ---
 configure_banner() {
     log "=== Configuring legal banner ==="
     sudo tee /etc/issue.net > /dev/null <<'EOF'
@@ -65,13 +76,14 @@ EOF
 }
 
 # ============================================================
-# Exécution principale
+# Execution principale
 # ============================================================
 echo "=== NovaTech Master Hardening Script ==="
 log "Hardening started"
 
 harden_kernel
 minimize_services
+remove_compilers
 lock_root
 configure_banner
 
