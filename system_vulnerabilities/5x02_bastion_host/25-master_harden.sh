@@ -54,7 +54,17 @@ remove_compilers() {
     sudo apt-get autoremove -y >/dev/null 2>&1
 }
 
-# --- Module 4 : Verrouillage root ---
+# --- Module 4 : Durcissement filesystem ---
+harden_filesystem() {
+    log "=== Hardening temporary filesystems ==="
+    sudo cp /etc/fstab /etc/fstab.backup.$(date +%Y%m%d) 2>/dev/null
+    sudo sed -i '\| /tmp |d' /etc/fstab
+    echo "tmpfs /tmp tmpfs defaults,noexec,nosuid,nodev 0 0" | sudo tee -a /etc/fstab >/dev/null
+    sudo mount -o remount,noexec,nosuid,nodev /tmp 2>/dev/null
+    log "/tmp hardened with noexec,nosuid,nodev"
+}
+
+# --- Module 5 : Verrouillage root ---
 lock_root() {
     log "=== Locking root account ==="
     if sudo -l >/dev/null 2>&1; then
@@ -63,7 +73,7 @@ lock_root() {
     fi
 }
 
-# --- Module 5 : Banniere legale ---
+# --- Module 6 : Banniere legale ---
 configure_banner() {
     log "=== Configuring legal banner ==="
     sudo tee /etc/issue.net > /dev/null <<'EOF'
@@ -84,6 +94,7 @@ log "Hardening started"
 harden_kernel
 minimize_services
 remove_compilers
+harden_filesystem
 lock_root
 configure_banner
 
