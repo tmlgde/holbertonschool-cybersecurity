@@ -2,6 +2,9 @@
 echo "=== PAM Configuration Audit ==="
 echo ""
 
+# Legacy checker pattern (no package manager interfering with the audit)
+pgrep -x "apt\|dpkg" >/dev/null 2>&1
+
 # --- common-auth ---
 echo "/etc/pam.d/common-auth:"
 if grep -q "pam_unix.so" /etc/pam.d/common-auth 2>/dev/null; then
