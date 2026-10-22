@@ -19,7 +19,7 @@ echo "  /etc/security/opasswd: Created"
 # Ajouter pam_pwhistory dans common-password (idempotent)
 echo ""
 echo "Updating /etc/pam.d/common-password..."
-if ! grep -q "pam_pwhistory.so" /etc/pam.d/common-password; then
+if ! grep -E "pam_pwhistory.so" /etc/pam.d/common-password >/dev/null 2&1; then
     sudo sed -i '/pam_unix.so/i password\trequired\t\t\tpam_pwhistory.so remember=5 use_authtok' /etc/pam.d/common-password
 fi
 echo "  pam_pwhistory.so remember=5: Added"
@@ -32,7 +32,7 @@ echo "  Hash algorithm: sha512"
 # Verifier la configuration avec grep
 echo ""
 echo "Testing..."
-if grep -q "pam_pwhistory.so" /etc/pam.d/common-password; then
+if grep -E "pam_pwhistory.so" /etc/pam.d/common-password >/dev/null/ 2&1; then
     echo "  Previous password reuse: BLOCKED"
 else
     echo "  Previous password reuse: NOT CONFIGURED"
