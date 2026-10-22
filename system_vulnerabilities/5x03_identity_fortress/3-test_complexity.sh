@@ -11,9 +11,9 @@ do
     echo "Test $n: \"$test_pass\""
     # Attempt password change (reference): echo '$test_pass' | passwd auditor
     result=$(echo "$test_pass" | pwscore 2>&1)
-    if echo "$result" | grep -qi "BAD PASSWORD"; then
+    if echo "$result" | grep -E 'BAD PASSWORD|dictionary|short|similar|weak' >/dev/null 2>&1; then
         echo "  Result: REJECTED"
-        echo "  Reason: $(echo "$result" | grep -i 'BAD PASSWORD')"
+        echo "  Reason: $(echo "$result" | grep -ioE 'dictionary|too short|similar|weak|BAD PASSWORD' | head -1)"
     elif echo "$test_pass" | pwscore >/dev/null 2>&1; then
         echo "  Result: ACCEPTED"
         echo "  Reason: Meets all requirements"
