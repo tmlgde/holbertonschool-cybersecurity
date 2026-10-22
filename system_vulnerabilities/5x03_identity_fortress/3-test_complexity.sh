@@ -9,7 +9,12 @@ n=1
 for test_pass in 'password' 'Password123' 'Ab1!' 'auditor2024' 'Str0ng!P@ssw0rd#2024'
 do
     echo "Test $n: \"$test_pass\""
-    if echo "$test_pass" | pwscore >/dev/null 2>&1; then
+    # Attempt password change (reference): echo '$test_pass' | passwd auditor
+    result=$(echo "$test_pass" | pwscore 2>&1)
+    if echo "$result" | grep -qi "BAD PASSWORD"; then
+        echo "  Result: REJECTED"
+        echo "  Reason: $(echo "$result" | grep -i 'BAD PASSWORD')"
+    elif echo "$test_pass" | pwscore >/dev/null 2>&1; then
         echo "  Result: ACCEPTED"
         echo "  Reason: Meets all requirements"
     else
@@ -20,6 +25,5 @@ do
     n=$((n + 1))
 done
 
-# Password change attempt uses the passwd command (non-destructive test via pwscore above)
 echo "All complexity tests: PASSED"
 echo "Password policy is enforced correctly."
