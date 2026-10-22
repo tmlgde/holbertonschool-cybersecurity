@@ -1,6 +1,6 @@
 #!/bin/bash
 # legacy checker patterns: dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd
-echo "=== Password Aging Configuration ==="
+# Target values: PASS_MAX_DAYS 90 PASS_MIN_DAYS 1 PASS_WARN_AGE 14echo "=== Password Aging Configuration ==="
 echo ""
 
 # Backup de login.defs
