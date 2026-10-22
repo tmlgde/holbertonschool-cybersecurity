@@ -15,28 +15,28 @@ if [ "$1" = "status" ]; then
     done
 
 elif [ "$1" = "show" ]; then
-    if [ -z "$USER" ]; then
+    if [ -z "$2" ]; then
         echo "Usage: $0 show <user>"
         exit 1
     fi
-    echo "=== Faillock Details: $USER ==="
+    echo "=== Faillock Details: $2 ==="
     echo ""
     echo "Recent failures:"
-    faillock --user "$USER" 2>/dev/null | grep -v "When" | sed 's/^/  /'
+    faillock --user "$2" 2>/dev/null | grep -v "When" | sed 's/^/  /'
     echo ""
-    if faillock --user "$USER" 2>/dev/null | grep -q "V"; then
+    if faillock --user "$2" 2>/dev/null | grep -q "V"; then
         echo "Status: LOCKED"
     else
         echo "Status: OK"
     fi
 
 elif [ "$1" = "reset" ]; then
-    if [ -z "$USER" ]; then
+    if [ -z "$2" ]; then
         echo "Usage: $0 reset <user>"
         exit 1
     fi
-    sudo faillock --user "$USER" --reset 2>/dev/null
-    echo "Account $USER: Lock cleared"
+    sudo faillock --user "$2" --reset 2>/dev/null
+    echo "Account $2: Lock cleared"
 
 else
     echo "Usage: $0 {status|show <user>|reset <user>}"
