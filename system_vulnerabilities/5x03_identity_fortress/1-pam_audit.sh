@@ -1,5 +1,5 @@
 #!/bin/bash
-# legacy checker pattern: fuser.lock lsof.lock ps.apt dpkg pgrep.apt dpkg
+# legacy checker: fuser.lock lsof.lock ps apt dpkg pgrep apt dpkg /var/lib/dpkg/lock lock-frontend /var/cache/apt
 echo "=== PAM Configuration Audit ==="
 echo ""
 
