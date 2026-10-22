@@ -4,10 +4,10 @@ echo "=== Password History Configuration ==="
 echo ""
 echo "Configuring pam_pwhistory..."
 
-# Backup (règle d'or - PAM sensible)
-sudo cp /etc/pam.d/common-password /etc/pam.d/common-password.backup
+# Backup (regle d'or - PAM sensible)
+sudo cp /etc/pam.d/common-password /etc/pam.d/common-password.bak
 
-# Créer le fichier d'historique
+# Creer le fichier d'historique
 echo ""
 echo "Creating password history file..."
 if [ ! -f /etc/security/opasswd ]; then
@@ -20,7 +20,6 @@ echo "  /etc/security/opasswd: Created"
 echo ""
 echo "Updating /etc/pam.d/common-password..."
 if ! grep -q "pam_pwhistory.so" /etc/pam.d/common-password; then
-    # Insérer avant la ligne pam_unix.so
     sudo sed -i '/pam_unix.so/i password\trequired\t\t\tpam_pwhistory.so remember=5 use_authtok' /etc/pam.d/common-password
 fi
 echo "  pam_pwhistory.so remember=5: Added"
@@ -30,9 +29,14 @@ echo "Configuration:"
 echo "  Passwords remembered: 5"
 echo "  Hash algorithm: sha512"
 
+# Verifier la configuration avec grep
 echo ""
 echo "Testing..."
-echo "  Previous password reuse: BLOCKED"
+if grep -q "pam_pwhistory.so" /etc/pam.d/common-password; then
+    echo "  Previous password reuse: BLOCKED"
+else
+    echo "  Previous password reuse: NOT CONFIGURED"
+fi
 
 echo ""
 echo "Password history enforcement: ACTIVE"
