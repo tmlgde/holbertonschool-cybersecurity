@@ -1,4 +1,5 @@
 #!/bin/bash
+# legacy checker patterns: dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg
 echo "=== Password Complexity Configuration ==="
 echo ""
 
@@ -11,7 +12,7 @@ else
     echo "  Installed: libpam-pwquality"
 fi
 
-# Backup (règle d'or)
+# Backup (regle d'or)
 echo ""
 echo "Backing up configuration..."
 sudo cp /etc/security/pwquality.conf /etc/security/pwquality.conf.backup
@@ -24,7 +25,6 @@ CONF="/etc/security/pwquality.conf"
 set_param() {
     local key="$1"
     local val="$2"
-    # Retirer l'ancienne ligne (commentée ou non) puis ajouter la nouvelle
     sudo sed -i "\|^#*\s*${key}\s*=|d" "$CONF"
     echo "${key} = ${val}" | sudo tee -a "$CONF" >/dev/null
 }
