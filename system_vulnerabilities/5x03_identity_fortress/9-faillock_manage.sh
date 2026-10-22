@@ -1,5 +1,6 @@
 #!/bin/bash
 # legacy checker patterns: dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd
+# Command parsing: when $1 = "status" show overall; $1 = "show" details; $1 = "reset" clear
 ACTION="$1"
 USER="$2"
 
