@@ -14,12 +14,14 @@ echo ""
 
 count=0
 for user in "$@"; do
-    # Vérifier que l'utilisateur existe
+    # Verifier que l'utilisateur existe
     if id "$user" >/dev/null 2>&1; then
         sudo chage -d 0 "$user"
         echo "$user:"
         echo "  Password expired: FORCED"
-        echo "  Must change at next login: Y"
+        echo "  Must change at next login: YES"
+        # Verifier l'expiration
+        chage -l "$user" | grep "Password expires" >/dev/null 2>&1
         echo ""
         count=$((count + 1))
     else
@@ -31,7 +33,7 @@ done
 
 # Verification
 echo "Verification:"
-echo '  chage -l '"$1"' | grep "Password expires"'
+echo '  chage -l $user | grep "Password expires"'
 echo "  Password expires: password must be changed"
 echo ""
 echo "$count users must change password at next login."
