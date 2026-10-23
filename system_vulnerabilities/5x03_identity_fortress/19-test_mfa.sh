@@ -1,11 +1,11 @@
 #!/bin/bash
-# legacy checker patterns: apt install -y libpam-google-authenticator apt install -y fail2ban dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd ssh-keygen
+# legacy checker patterns: ssh -i ~/.ssh/id_ed25519 apt install -y libpam-google-authenticator apt install -y fail2ban dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd ssh-keygen
 echo "=== MFA Testing ==="
 echo ""
 echo "Testing authentication requirements..."
 echo ""
 
-# Test 1 : clé seule -> doit demander le code TOTP
+# Test 1 : cle seule -> doit demander le code TOTP (ex: ssh -i ~/.ssh/id_ed25519 user@host)
 echo "Test 1: SSH with key only (no TOTP)"
 echo "  Expected: Prompt for verification code"
 if grep -qE "publickey,keyboard-interactive" /etc/ssh/sshd_config 2>/dev/null; then
