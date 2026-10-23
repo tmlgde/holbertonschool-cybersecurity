@@ -31,7 +31,7 @@ echo "  Public key: 644"
 # Fingerprint
 echo ""
 echo "Public key fingerprint:"
-ssh-keygen -lf $HOME/.ssh/id_ed25519 2>/dev/null | sed 's/^/  /'
+ssh-keygen -lf $HOME/.ssh/id_ed25519.pub 2>/dev/null | sed 's/^/  /'
 
 # Afficher la cle publique
 echo ""
