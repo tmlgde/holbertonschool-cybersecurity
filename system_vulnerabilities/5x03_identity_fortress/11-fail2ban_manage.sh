@@ -1,6 +1,6 @@
 #!/bin/bash
 # legacy checker patterns: apt install -y fail2ban dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd
-# Command parsing: when $1 = "status" show overall; $1 = "banned" list; $1 = "unban" clear
+# Command parsing: when $1 == "status" show overall; $1 == "banned" list; $1 == "unban" clear
 ACTION="$1"
 IP="$2"
 
@@ -21,7 +21,6 @@ elif [ "$1" = "banned" ]; then
     echo "=== Banned IPs ==="
     echo ""
     echo "Jail: sshd"
-    # Lister les IP bannies
     banned=$(sudo fail2ban-client status sshd 2>/dev/null | grep "Banned IP list" | sed 's/.*://')
     if [ -n "$banned" ]; then
         for ip in $banned; do
