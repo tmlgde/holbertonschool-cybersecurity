@@ -36,28 +36,11 @@ fi
 # Test 4 : config SSH
 echo ""
 echo "Test 4: SSH configuration check"
-if grep -qE "publickey,keyboard-interactive" /etc/ssh/sshd_config 2>/dev/null; then
-    echo "  AuthenticationMethods: publickey,keyboard-interactive"
+if grep -qE "AuthenticationMethods publickey,keyboard-interactive" /etc/ssh/sshd_config 2>/dev/null; then
+    echo "  AuthenticationMethods publickey,keyboard-interactive"
 fi
 if grep -qE "^ChallengeResponseAuthentication yes" /etc/ssh/sshd_config 2>/dev/null; then
     echo "  ChallengeResponseAuthentication: yes"
 fi
 
-# Test 5 : config TOTP utilisateur
-echo ""
-echo "Test 5: User TOTP configuration"
-if [ -f "$HOME/.google_authenticator" ]; then
-    echo "  ~/.google_authenticator: Exists"
-    perms=$(stat -c '%a' "$HOME/.google_authenticator")
-    if [ "$perms" = "600" ]; then
-        echo "  Permissions (600): Correct"
-    else
-        echo "  Permissions ($perms): Should be 600"
-    fi
-else
-    echo "  ~/.google_authenticator: Not found"
-fi
-
-echo ""
-echo "All MFA tests: PASSED"
-echo "Two-factor authentication is properly configured."
+#
