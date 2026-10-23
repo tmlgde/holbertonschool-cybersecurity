@@ -39,7 +39,7 @@ echo "  bantime = 3600 (1 hour)"
 # Demarrer fail2ban
 echo ""
 echo "Starting fail2ban..."
-sudo systemctl enable fail2ban >/dev/null 2>&1
+sudo systemctl enable --now fail2ban >/dev/null 2>&1
 sudo systemctl restart fail2ban >/dev/null 2>&1
 if systemctl is-active fail2ban >/dev/null 2>&1; then
     echo "  fail2ban.service: Active"
