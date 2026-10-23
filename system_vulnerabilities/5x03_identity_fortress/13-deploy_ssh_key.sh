@@ -15,31 +15,31 @@ echo "Target user: $USER"
 # Creer ~/.ssh si absent
 echo ""
 echo "Creating .ssh directory if needed..."
-mkdir -p "$HOME/.ssh"
-chmod 700 "$HOME/.ssh"
+mkdir -p $HOME/.ssh
+chmod 700 $HOME/.ssh
 echo "  $HOME/.ssh: Created"
 echo "  Permissions: 700"
 
 # Ajouter la cle a authorized_keys (append, sans doublon)
 echo ""
 echo "Adding key to authorized_keys..."
-if ! grep -qF "$PUBKEY" "$HOME/.ssh/authorized_keys" 2>/dev/null; then
-    echo "$PUBKEY" >> "$HOME/.ssh/authorized_keys"
+if ! grep -qF "$PUBKEY" $HOME/.ssh/authorized_keys 2>/dev/null; then
+    echo "$PUBKEY" >> $HOME/.ssh/authorized_keys
 fi
 echo "  Key added successfully"
 
 # Permissions authorized_keys
 echo ""
 echo "Setting permissions..."
-chmod 600 "$HOME/.ssh/authorized_keys"
+chmod 600 $HOME/.ssh/authorized_keys
 echo "  authorized_keys: 600"
 
 # Verification
 echo ""
 echo "Verification:"
-count=$(wc -l < "$HOME/.ssh/authorized_keys")
+count=$(wc -l < $HOME/.ssh/authorized_keys)
 echo "  Key count in authorized_keys: $count"
-perms=$(stat -c '%a' "$HOME/.ssh/authorized_keys")
+perms=$(stat -c '%a' $HOME/.ssh/authorized_keys)
 if [ "$perms" = "600" ]; then
     echo "  Permissions correct: YES"
 else
