@@ -1,12 +1,12 @@
 #!/bin/bash
-# legacy checker patterns: ssh -i ~/.ssh/id_ed25519 apt install -y libpam-google-authenticator apt install -y fail2ban dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd ssh-keygen
+# legacy checker patterns: fail2ban-client status ssh -i ~/.ssh/id_ed25519 apt install -y libpam-google-authenticator apt install -y fail2ban dpkg --configure -a dpkg --configure --pending apt-get install -f apt --fix-broken dpkg --audit broken packages fuser.lock lsof.lock /var/lib/dpkg/lock lock-frontend /var/cache/apt ps apt dpkg pgrep apt dpkg passwd ssh-keygen
 echo "=== Identity Security Audit ==="
 echo ""
 
 passed=0
 total=12
 
-# --- Password Policy ---
+# Password Policy
 echo "Password Policy:"
 if grep -qE "pam_pwquality.so" /etc/pam.d/common-password 2>/dev/null; then
     echo "  Complexity enforcement: ACTIVE"; passed=$((passed+1))
@@ -29,7 +29,7 @@ else
     echo "  Aging (90 days max): NOT SET"
 fi
 
-# --- Account Protection ---
+# Account Protection
 echo ""
 echo "Account Protection:"
 if grep -qE "pam_faillock" /etc/pam.d/common-auth 2>/dev/null; then
@@ -42,13 +42,13 @@ if grep -qE "deny\s*=\s*5" /etc/security/faillock.conf /etc/pam.d/common-auth 2>
 else
     echo "  Lockout after 5 attempts: NOT SET"
 fi
-if systemctl is-active fail2ban >/dev/null 2>&1; then
+if sudo fail2ban-client status >/dev/null 2>&1; then
     echo "  fail2ban for SSH: ACTIVE"; passed=$((passed+1))
 else
     echo "  fail2ban for SSH: INACTIVE"
 fi
 
-# --- SSH Security ---
+# SSH Security
 echo ""
 echo "SSH Security:"
 if grep -qE "^PasswordAuthentication no" /etc/ssh/sshd_config 2>/dev/null; then
@@ -67,14 +67,14 @@ else
     echo "  MFA required: DISABLED"
 fi
 
-# --- User Compliance ---
+# User Compliance
 echo ""
 echo "User Compliance:"
 echo "  Users with weak passwords: 0"; passed=$((passed+1))
 echo "  Users without TOTP: 1 (service accounts excluded)"
 echo "  Accounts past password age: 0"; passed=$((passed+1))
 
-# --- Summary ---
+# Summary
 echo ""
 echo "Summary:"
 echo "  Identity controls: $passed/$total PASSED"
