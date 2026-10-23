@@ -35,7 +35,7 @@ elif [ "$1" = "unban" ]; then
         echo "Usage: $0 unban <ip>"
         exit 1
     fi
-    sudo fail2ban-client set sshd unbanip "$2" >/dev/null 2>&1
+    sudo fail2ban-client set sshd unbanip $2 >/dev/null 2>&1
     echo "IP $2 unbanned from jail sshd"
 
 else
