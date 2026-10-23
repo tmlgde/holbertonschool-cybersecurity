@@ -4,7 +4,7 @@ echo "=== SSH Key Deployment ==="
 echo ""
 
 # Gestion d'erreur : la cle publique en argument
-if [ -z "$1" ]; then
+if [ $# -eq 0 ]; then
     echo "Usage: $0 \"<public key>\""
     exit 1
 fi
