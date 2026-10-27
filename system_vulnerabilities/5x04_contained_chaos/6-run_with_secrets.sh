@@ -6,9 +6,7 @@ docker build -t devstream-nosecrets:v1 . > /dev/null 2>&1 || exit 1
 
 echo "Starting container with runtime secrets..."
 docker rm -f devstream-nosecrets > /dev/null 2>&1
-docker run -d --name devstream-nosecrets -p 5000:5000 \
-    -e DB_HOST -e DB_USER -e DB_PASSWORD \
-    devstream-nosecrets:v1 > /dev/null
+docker run -d --name devstream-nosecrets -p 5000:5000 -e DB_HOST -e DB_USER -e DB_PASSWORD devstream-nosecrets:v1 > /dev/null
 
 sleep 3
 
