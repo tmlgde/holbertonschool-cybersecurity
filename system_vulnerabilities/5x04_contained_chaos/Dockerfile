@@ -29,7 +29,10 @@ FROM python:3.11-slim
 
 RUN groupadd --gid 1000 appuser && \
     useradd --uid 1000 --gid appuser --no-create-home --shell /usr/sbin/nologin appuser
-
+# curl is only needed by the HEALTHCHECK below
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -37,6 +40,8 @@ WORKDIR /app
 COPY app.py .
 
 USER 1000:1000
+
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:5000/health || exit 1
 
 EXPOSE 5000
 
