@@ -46,7 +46,7 @@ COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /workspace
 
-USER 1000:1000
+USER devuser
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD ["python", "-c", "import pylint, black, pytest, mypy"]
 
