@@ -1,48 +1,53 @@
-# Stage 1: builder - build tools are used here only and never reach the final image
+# Stage 1: builder - install the Python tools in an isolated virtual environment
 FROM python:3.11-slim AS builder
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc make && \
-    rm -rf /var/lib/apt/lists/*
 
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-WORKDIR /build
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir \
+    pylint==3.3.1 \
+    black==24.10.0 \
+    pytest==8.3.3 \
+    mypy==1.13.0
 
-# Stage 2: runtime - only what is needed to run the application
+# Stage 2: runtime - secure Python 3.11 development environment
 FROM python:3.11-slim
 
+LABEL org.opencontainers.image.title="secure-python-dev" \
+      org.opencontainers.image.description="Hardened Python 3.11 development environment" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="DevStream Security Team" \
+      org.opencontainers.image.licenses="MIT"
+
 # SECURITY: no secret is stored in this image.
-# DB_HOST, DB_USER and DB_PASSWORD must be provided at runtime.
-# Never define secrets with ENV, ARG or RUN: they stay visible
-# in "docker history" and "docker inspect" for anyone with the image.
-#
-# Correct ways to pass secrets when starting the container:
-#   docker run -e DB_HOST -e DB_USER -e DB_PASSWORD devstream-multistage:v1
-#   docker run --env-file .env devstream-multistage:v1
+# Provide secrets at runtime only, for example:
+#   docker run --env-file .env secure-python-dev:v1
 #     (.env must be chmod 600 and never committed or copied into the image)
-# In production, prefer a secret manager (Docker secrets, Vault)
-# that mounts secrets as files under /run/secrets/.
+#
+# Recommended hardened run command:
+#   docker run -it --rm --cap-drop=ALL --security-opt=no-new-privileges:true
+#     --read-only --tmpfs /tmp:rw,noexec,nosuid,size=256m
+#     --tmpfs /home/devuser:rw,nosuid,size=256m
+#     --memory=1g --cpus=2 --pids-limit=200
+#     -v "$PWD":/workspace secure-python-dev:v1
 
-RUN groupadd --gid 1000 appuser && \
-    useradd --uid 1000 --gid appuser --no-create-home --shell /usr/sbin/nologin appuser
-# curl is only needed by the HEALTHCHECK below
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
-    rm -rf /var/lib/apt/lists/*
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN groupadd --gid 1000 devuser && \
+    useradd --uid 1000 --gid devuser --create-home --shell /bin/bash devuser && \
+    mkdir /workspace && \
+    chown devuser:devuser /workspace
+
 COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
 
-WORKDIR /app
-COPY app.py .
+WORKDIR /workspace
 
 USER 1000:1000
 
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD curl -f http://localhost:5000/health || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 CMD ["python", "-c", "import pylint, black, pytest, mypy"]
 
-EXPOSE 5000
-
-CMD ["python", "app.py"]
+CMD ["/bin/bash"]
