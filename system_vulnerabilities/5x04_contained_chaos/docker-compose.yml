@@ -1,0 +1,44 @@
+# Secure Python development environment
+# Usage: docker-compose run --rm dev <command>
+#   docker-compose run --rm dev python my_script.py
+#   docker-compose run --rm dev pytest tests/
+#   docker-compose run --rm dev pylint my_module/
+#   docker-compose run --rm dev black --check .
+#
+# SECURITY: no secret is stored here. To pass secrets, add
+#   env_file: .env
+# with a .env file that is chmod 600 and never committed.
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: secure-python-dev:v1
+
+    user: devuser
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+      - /home/devuser:rw,nosuid,size=256m,uid=1000,gid=1000,mode=0700
+
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    mem_limit: 1g
+    memswap_limit: 1g
+    cpus: 1.0
+    pids_limit: 200
+
+    # No network: linting and tests do not need it.
+    # Remove this line only if a command needs Internet access (pip install).
+    network_mode: none
+
+    stdin_open: true
+    tty: true
