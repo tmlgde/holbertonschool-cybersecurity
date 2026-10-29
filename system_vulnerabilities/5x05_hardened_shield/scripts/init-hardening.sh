@@ -44,6 +44,17 @@ sgid_count=$(find / -perm -2000 -type f 2>/dev/null | wc -l)
 log " SUID binaries found: $suid_count"
 log " SGID binaries found: $sgid_count"
 
+# --- Filesystem security ---
+log "Applying filesystem security..."
+# Umask restrictif (fichiers crees sans droits pour les autres)
+umask 027
+# Proteger les fichiers sensibles (permissions strictes)
+chmod 600 /etc/shadow 2>/dev/null && log "  Secured: /etc/shadow (600)"
+chmod 644 /etc/passwd 2>/dev/null && log "  Secured: /etc/passwd (644)"
+chmod 700 /etc/ssh 2>/dev/null && log "  Secured: /etc/ssh (700)"
+# Note: noexec/nosuid/nodev sur /tmp se configurent au runtime (--tmpfs)
+log "  Note: /tmp noexec/nosuid -> applied at runtime via --tmpfs"
+
 # Legal Banner
 log "Configuring legal banner..."
 cat > /etc/issue.net <<'EOF'

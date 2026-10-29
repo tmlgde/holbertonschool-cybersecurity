@@ -46,3 +46,6 @@ log "=== Startup complete, container is now serving ==="
 # apache2ctl -D FOREGROUND garde Apache au premier plan :
 # tant qu'Apache tourne, le conteneur vit. S'il crash, le conteneur s'arrete.
 exec apache2ctl -D FOREGROUND
+
+# SI exec echoue, on sort proprement
+exit 0
