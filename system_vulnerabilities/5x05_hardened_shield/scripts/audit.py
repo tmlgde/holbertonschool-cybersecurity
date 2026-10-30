@@ -163,7 +163,7 @@ def write_markdown(results, category_scores, total_passed, total_checks, overall
             status = "✅ PASS" if ok else "❌ FAIL"
             lines.append(f"| {description} | {status} |")
 
-    with open("audit_result.md", "w", encoding="utf-8") as f:
+    with open("/tmp/audit_result.md", "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
 # ---------- Point d'entree ----------
