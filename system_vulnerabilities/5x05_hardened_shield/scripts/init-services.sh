@@ -1,6 +1,6 @@
 #!/bin/bash
 # init-services.sh - Orchestrateur de demarrage du conteneur (PID 1)
-# Lance les scripts de durcissement, demarre les services, et maintient le conteneur en vie.
+# Demarre les services (SSH + Apache). La config est faite au BUILD.
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [SERVICES] $1"
@@ -8,20 +8,16 @@ log() {
 
 log "=== Container Startup Orchestration ==="
 
-# 1. Appliquer le durcissement systeme (5x02)
-log "Running system hardening..."
-/usr/local/bin/init-hardening.sh
-
-# 2. Appliquer les controles d'identite (5x03)
-log "Running identity hardening..."
-/usr/local/bin/init-identity.sh
-
-# 3. Demarrer le serveur SSH (en arriere-plan)
-log "Starting SSH server..."
-# Generer les cles d'hote SSH si absentes
-ssh-keygen -A >/dev/null 2>&1
-# Creer le repertoire runtime de sshd
+# Preparer les repertoires runtime (tmpfs montes vides au demarrage)
 mkdir -p /run/sshd
+chmod 0755 /run/sshd
+chown root:root /run/sshd
+mkdir -p /run/lock
+mkdir -p /run/lock/apache2
+mkdir -p /run/apache2
+
+# Demarrer le serveur SSH (en arriere-plan)
+log "Starting SSH server..."
 /usr/sbin/sshd
 if pgrep -x sshd >/dev/null 2>&1; then
     log "  SSH server: RUNNING"
@@ -29,23 +25,19 @@ else
     log "  SSH server: FAILED to start"
 fi
 
-# 4. Verification des services avant de passer au foreground
+# Verification des services
 log "Verifying services..."
-
-# Verifier SSH (deja fait, mais on consolide le health check)
 if pgrep -x sshd >/dev/null 2>&1; then
     log "  [HEALTH] SSH: OK (listening)"
 else
     log "  [HEALTH] SSH: NOT running"
 fi
 
-# 5. Demarrer Apache en AVANT-PLAN (foreground) -> devient le PID 1
+# Demarrer Apache en AVANT-PLAN (foreground) -> devient le PID 1
 log "Starting web server (foreground)..."
 log "=== Startup complete, container is now serving ==="
+source /etc/apache2/envvars 2>/dev/null
+exec apache2 -D FOREGROUND
 
-# apache2ctl -D FOREGROUND garde Apache au premier plan :
-# tant qu'Apache tourne, le conteneur vit. S'il crash, le conteneur s'arrete.
-exec apache2ctl -D FOREGROUND
-
-# SI exec echoue, on sort proprement
+# Filet de securite si exec echoue
 exit 0
