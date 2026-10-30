@@ -1,0 +1,46 @@
+services:
+  hardened-shield:
+    build: .
+    image: hardened-shield:1.0
+    container_name: hardened-shield
+
+    # --- Port mappings ---
+    ports:
+      - "127.0.0.1:8080:80"   # Web (Apache) - local seulement
+      - "127.0.0.1:2222:22"   # SSH - local seulement
+
+    # --- Capability restrictions ---
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE      # pour binder les ports < 1024
+      - SETUID                # Apache drope ses privileges vers www-data
+      - SETGID
+      - CHOWN                 # Apache change le proprietaire de ses sockets
+
+    # --- Security options ---
+    security_opt:
+      - no-new-privileges:true
+
+    # --- Read-only filesystem + tmpfs pour le runtime ---
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+      - /run:rw,nosuid,size=16m
+      - /var/run:rw,nosuid,size=16m
+      - /var/lock:rw,nosuid,size=4m
+      - /var/log/apache2:rw,nosuid,size=16m
+      - /run/sshd:rw,nosuid,size=4m
+
+    # --- Resource limits ---
+    mem_limit: 256m
+    memswap_limit: 256m
+    pids_limit: 100
+    cpus: 0.5
+
+    # --- Volume mounts ---
+    volumes:
+      - ./config:/config:ro
+
+    # --- Restart policy ---
+    restart: unless-stopped

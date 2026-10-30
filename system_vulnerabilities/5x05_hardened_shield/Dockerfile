@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Créer un utilisateur non-root dédié
+# Creer un utilisateur non-root dedie
 RUN groupadd --gid 1000 appuser && \
     useradd --uid 1000 --gid appuser --no-create-home --shell /usr/sbin/nologin appuser
 
@@ -29,19 +29,29 @@ COPY scripts/init-identity.sh /usr/local/bin/init-identity.sh
 COPY scripts/init-services.sh /usr/local/bin/init-services.sh
 COPY scripts/audit.py /usr/local/bin/audit.py
 
-# Rendre les scripts exécutables
-RUN chmod +x /usr/local/bin/init-*.sh /usr/local/bin/audit.py
+# Rendre les scripts executables
+RUN chmod +x /usr/local/bin/init-hardening.sh \
+             /usr/local/bin/init-identity.sh \
+             /usr/local/bin/init-services.sh \
+             /usr/local/bin/audit.py
 
-# Dossier web + page de santé pour le HEALTHCHECK
+# Appliquer le durcissement au build
+RUN /usr/local/bin/init-hardening.sh && \
+    /usr/local/bin/init-identity.sh
+
+# Generer les cles d'hote SSH au build
+RUN ssh-keygen -A
+
+# Dossier web + page de sante pour le HEALTHCHECK
 RUN mkdir -p /var/www/html && \
     echo "OK" > /var/www/html/health
 
-# Verifier que le serveur web répond
+# Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-	CMD curl -f http://localhost/health || exit 1
+    CMD curl -f http://localhost/health || exit 1
 
-# Documenter les ports utilisés
+# Documenter les ports utilises
 EXPOSE 80 22
 
-# Quoi lancer au démarrage
+# Quoi lancer au demarrage (uniquement les services maintenant)
 CMD ["/usr/local/bin/init-services.sh"]
