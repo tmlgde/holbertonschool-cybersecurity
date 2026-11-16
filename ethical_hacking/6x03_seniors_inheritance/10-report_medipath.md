@@ -3,7 +3,7 @@
 **Engagement reference:** VS-MPD-26-041
 **Reporting period:** 04–12 juin 2026 (tests techniques) ; finalisation novembre 2026
 **Prepared by:**  Junior Consultant, Vanguard Security
-**Distribution:** Medipath audit comittee
+**Distribution:** MediPath audit committee
 
 ## 1. Executive Summary
 
