@@ -2,16 +2,25 @@
 
 **Engagement reference:** VS-MPD-26-041
 **Reporting period:** 04–12 juin 2026 (tests techniques) ; finalisation novembre 2026
-**Prepared by:**  Junior Consultant, Vanguard Security
+**Prepared by:** [Ton nom], Junior Consultant, Vanguard Security
 **Distribution:** MediPath audit committee
 
 ## 1. Executive Summary
 
-Nous avons examiné la sécurité de la plateforme MediPath afin de préparer le comité d'audit et le renouvellement de la certification HDS. L'objectif était de vérifier si les données de santé gérées pour les 400 laboratoires partenaires sont correctement protégées, et de chiffrer ce qu'un incident coûterait réellement. L'évaluation est globalement rassurante sur la conception de la plateforme, mais elle met en évidence plusieurs points à corriger rapidement, dont un scénario majeur qui pourrait menacer l'activité s'il n'était pas traité.
+Nous avons vérifié si la plateforme de MediPath protège correctement les données médicales qu'elle gère pour ses 400 laboratoires partenaires, et nous avons estimé en euros ce qu'un incident coûterait à l'entreprise. Ce travail prépare la réunion du comité d'audit et le renouvellement de l'agrément qui autorise MediPath à héberger des données de santé (appelé « HDS »). Le constat général est rassurant : la plateforme est bien conçue. Mais quelques points doivent être corrigés vite, dont un problème important qui, laissé de côté, pourrait mettre l'entreprise en difficulté.
 
-Le comité peut prendre quatre décisions. Premièrement, financer en priorité la correction du scénario le plus grave : une combinaison de faiblesses pourrait permettre d'accéder aux résultats médicaux de nombreux laboratoires à la fois, pour une perte probable d'environ 4,5 millions d'euros et un risque pesant sur la certification HDS. Deuxièmement, autoriser la révision de la façon dont les droits d'accès sont accordés et retirés, cause commune de plusieurs problèmes, dont la correction désamorce une grande partie du risque principal. Troisièmement, mettre en conformité la durée de conservation des exports de données, directement liée au renouvellement HDS prévu dans cinq mois. Quatrièmement, approuver un second lot de corrections visant un scénario de fuite via le portail de support, estimé à environ 1,2 million d'euros.
+Le comité peut prendre quatre décisions. D'abord, mettre de l'argent en priorité sur le problème le plus grave : aujourd'hui, une personne mal intentionnée pourrait, en combinant plusieurs faiblesses, consulter les résultats médicaux de nombreux laboratoires d'un coup. Une telle fuite coûterait environ 4,5 millions d'euros et pourrait faire perdre l'agrément de santé. Ensuite, autoriser une remise à plat de la façon dont l'entreprise donne et reprend les autorisations d'accès de ses employés et de ses partenaires : c'est l'origine commune de plusieurs problèmes, et la régler fait disparaître une grande partie du risque principal. Puis, mettre en règle la durée pendant laquelle les fichiers exportés restent téléchargeables, un point directement lié à l'agrément de santé à renouveler dans cinq mois. Enfin, approuver un deuxième lot de corrections, moins urgentes, visant une fuite possible par l'outil utilisé par le service d'assistance, estimée à environ 1,2 million d'euros.
 
-Après ces corrections, le risque résiduel devient faible et maîtrisé. Aucune fuite réelle n'a eu lieu pendant l'évaluation, menée sur un environnement de test. Les corrections prioritaires tiennent dans la fenêtre de huit semaines du comité, pour un budget raisonnable au regard des pertes évitées.
+Une fois ces corrections faites, le risque restant est faible et sous contrôle. Aucune donnée réelle n'a été touchée pendant notre évaluation, qui s'est déroulée sur une copie de test de la plateforme. Les corrections les plus urgentes peuvent être réalisées dans les huit semaines dont dispose le comité, pour un coût raisonnable comparé aux pertes évitées. Notre recommandation est simple : traiter d'abord le problème principal, car c'est là que chaque euro dépensé protège le plus l'entreprise, ses laboratoires partenaires et les patients.
+
+## 1.1 À qui s'adresse ce rapport
+
+Ce document est écrit pour être lu à plusieurs niveaux, selon le rôle de chaque membre du comité.
+
+- **Pour la direction générale :** le résumé ci-dessus suffit. Il donne les quatre décisions à prendre, leur coût évité en euros, et le message principal : traiter d'abord le risque le plus grave.
+- **Pour la protection des données (DPO) :** les sections 3 et 4 détaillent les points liés aux données de santé et à l'agrément HDS (accès aux résultats, durée de conservation des exports), avec leur lien réglementaire.
+- **Pour la direction technique :** la section 3 donne le détail technique de chaque point, les scores de gravité ajustés au contexte de MediPath, et le correctif à appliquer avec son responsable.
+- **Pour la gouvernance (observateur du conseil) :** la section 5 propose un suivi de plus haut niveau, et la section 6 précise honnêtement ce que l'évaluation couvre et ne couvre pas.
 
 ## 2. Engagement Scope and Methodology
 
