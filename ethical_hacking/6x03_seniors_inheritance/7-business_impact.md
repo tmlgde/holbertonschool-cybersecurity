@@ -1,78 +1,100 @@
 # Business Impact Quantification
 
-Toutes les hypothèses s'appuient sur les métriques fournies : 31,2 M€ de revenu annuel récurrent, 400 laboratoires, 78 000 € de contrat moyen par laboratoire, 1,9 million de patients, coût d'interruption 65 000 à 120 000 € par heure, 1 % de perte de clients ≈ 312 000 €. Rappel : le plafond RGPD (4 % du revenu ≈ 1,25 M€) est un maximum légal, pas la perte attendue.
+Toutes les hypothèses s'appuient sur les métriques fournies : 31,2 M€ de revenu annuel, 400 laboratoires, 78 000 € par laboratoire, coût d'interruption 65 000 à 120 000 € par heure, 1 % de perte de clients ≈ 312 000 €. Le plafond RGPD (4 % du revenu ≈ 1,25 M€) est un maximum légal, pas la perte attendue. Les montants sont volontairement arrondis : ce sont des ordres de grandeur pour décider d'un budget, pas des calculs exacts.
+
+## Hiérarchie des impacts (du plus coûteux au moins coûteux)
+
+1. Chaîne 1 (central ~4–5 M€) — la plus grave, car elle seule menace la certification HDS.
+2. Chaîne 2 (central ~1–1,5 M€).
+3. F-03/09 (central ~1,5 M€) — le maillon racine, dont la correction désamorce une grande partie de la Chaîne 1.
+4. F-01 (central ~1 M€).
+5. F-10, F-05 (central ~0,5 M€).
+6. F-06 (central ~0,4 M€).
+7. F-02, F-04, F-08 (central < 0,3 M€).
+
+Lecture pour le budget : corriger d'abord F-03/09, F-01 et F-10 fait tomber la Chaîne 1, donc le plus gros poste de perte. C'est le meilleur retour par euro investi.
 
 ## Item: F-01 — Accès inter-laboratoires aux résultats
-- Range: EUR 300 000 to 2 000 000 (central estimate EUR 900 000)
-- Reasoning: Fuite de données de santé. Trois moteurs : amende CNIL plausible (150 000 à 600 000 € pour une fuite de santé), coûts d'investigation et de notification au-delà du contrat d'astreinte (50 000 à 150 000 €), et perte de clients de 1 à 3 % (312 000 à 936 000 €).
+- Range: EUR 0,3 M to 2 M (central ~1 M)
+- Reasoning: Fuite de données de santé. Coût = amende CNIL plausible + investigation et notification + départ de clients.
+- Remediation lever: vérifier l'appartenance du résultat au demandeur ; réduit directement l'exposition et désamorce un maillon de la Chaîne 1.
 - Assumptions:
-    - Un sous-ensemble de laboratoires et de patients est exposé, pas la totalité.
-    - Scénario réglementaire : enquête CNIL avec sanction modérée, pas le plafond.
-    - Perte de clients comprise entre 1 % et 3 % des 400 laboratoires.
+    - Un sous-ensemble de laboratoires et de patients exposé, pas la totalité.
+    - Sanction CNIL modérée, pas le plafond.
+    - Départ de 1 à 3 % des laboratoires.
 
 ## Item: F-03/09 — Gestion des droits d'accès (fusion)
-- Range: EUR 500 000 to 3 000 000 (central estimate EUR 1 400 000)
-- Reasoning: Accès large à plusieurs tenants hospitaliers, donc exposition supérieure à une faille isolée. Amende réglementaire plausible plus élevée, réponse à incident étendue, et perte de clients de 2 à 5 % (624 000 à 1 560 000 €).
+- Range: EUR 0,5 M to 3 M (central ~1,5 M)
+- Reasoning: Accès large à plusieurs tenants hospitaliers. Amende plus élevée, réponse à incident étendue, départ de clients plus fort.
+- Remediation lever: jetons à périmètre et durée réduits, révocation immédiate. C'est le maillon racine : sa correction réduit aussi fortement la Chaîne 1.
 - Assumptions:
-    - Plusieurs tenants hospitaliers potentiellement concernés.
-    - Scénario réglementaire aggravé par l'ampleur, sous le plafond de 1,25 M€ sauf circonstances exceptionnelles.
-    - Perte de clients de 2 à 5 %.
+    - Plusieurs tenants hospitaliers concernés.
+    - Sanction sous le plafond de 1,25 M€ sauf circonstances exceptionnelles.
+    - Départ de 2 à 5 % des laboratoires.
 
 ## Item: F-10 — Service analytics, en-tête non vérifié
-- Range: EUR 150 000 to 1 200 000 (central estimate EUR 500 000)
-- Reasoning: Exposition de données d'activité agrégées, moins directement nominatives que F-01. Coûts d'investigation et réputationnels, perte de clients plus limitée. Sert surtout d'amplificateur dans la Chaîne 1.
+- Range: EUR 0,15 M to 1,2 M (central ~0,5 M)
+- Reasoning: Exposition de données agrégées, moins nominatives que F-01. Sert surtout d'amplificateur dans la Chaîne 1.
+- Remediation lever: authentifier les appels internes et dériver l'identité du laboratoire de données vérifiées ; coupe un maillon de la Chaîne 1.
 - Assumptions:
-    - Données agrégées, exposition PII indirecte.
-    - Perte de clients de 0,5 à 2 %.
+    - Données agrégées, exposition indirecte.
+    - Départ de 0,5 à 2 % des laboratoires.
 
 ## Item: F-05 — Webhook de statut non signé
-- Range: EUR 100 000 to 1 100 000 (central estimate EUR 450 000)
-- Reasoning: Risque opérationnel : un faux statut d'échantillon peut perturber la livraison des résultats. Coûts de réconciliation manuelle, dépassement du seuil de 2 heures déclenchant une escalade, et crédits de service (65 000 à 120 000 € par heure d'interruption).
+- Range: EUR 0,1 M to 1,1 M (central ~0,45 M)
+- Reasoning: Risque opérationnel : un faux statut d'échantillon perturbe la livraison des résultats. Réconciliation manuelle, escalade au-delà de 2 heures, crédits de service.
+- Remediation lever: signer les événements et valider les transitions d'état ; supprime le risque d'interruption liée aux faux statuts.
 - Assumptions:
-    - Perturbation de quelques heures sur un volume partiel des 62 000 échantillons quotidiens.
+    - Perturbation de quelques heures sur une partie des 62 000 échantillons quotidiens.
     - Réconciliation manuelle possible mais coûteuse.
 
 ## Item: F-06 — Rétention d'exports au-delà de la durée prévue
-- Range: EUR 100 000 to 1 000 000 (central estimate EUR 400 000)
-- Reasoning: Manquement de rétention sur des données de santé, exposition RGPD et HDS. Amende plausible, analyse DPO/juridique, impact sur la preuve de conformité HDS en cours de renouvellement.
+- Range: EUR 0,1 M to 1 M (central ~0,4 M)
+- Reasoning: Manquement de rétention sur des données de santé. Exposition RGPD et impact sur la preuve de conformité HDS en cours de renouvellement.
+- Remediation lever: aligner l'expiration des liens et des objets sur la durée approuvée ; protège directement le dossier HDS.
 - Assumptions:
-    - Volume d'exports concerné limité mais contenant des données de santé.
-    - Impact possible sur le dossier de renouvellement HDS prévu dans 5 mois.
+    - Volume d'exports limité mais contenant des données de santé.
+    - Impact possible sur le renouvellement HDS prévu dans 5 mois.
 
 ## Item: F-02 — Contenu actif stocké dans le portail support
-- Range: EUR 50 000 to 600 000 (central estimate EUR 200 000)
-- Reasoning: Compromission possible d'une session support à accès multi-laboratoires. Coûts d'investigation et réputationnels modérés ; maillon de la Chaîne 2.
+- Range: EUR 0,05 M to 0,6 M (central ~0,2 M)
+- Reasoning: Compromission possible d'une session support multi-laboratoires. Maillon de la Chaîne 2.
+- Remediation lever: encodage de sortie et CSP en mode blocage ; coupe le pivot central de la Chaîne 2.
 - Assumptions:
     - Exposition limitée par la MFA et les postes gérés.
-    - Pas de fuite massive en l'absence d'enchaînement.
+    - Pas de fuite massive sans enchaînement.
 
 ## Item: F-04 — Validation de certificat désactivée
-- Range: EUR 20 000 to 400 000 (central estimate EUR 100 000)
-- Reasoning: Risque résiduel faible car la passerelle d'egress impose déjà un TLS mutuel. Le coût n'apparaît que si ce contrôle tombe (défense en profondeur).
+- Range: EUR 0,02 M to 0,4 M (central ~0,1 M)
+- Reasoning: Risque résiduel faible car la passerelle impose déjà un TLS mutuel. Coût seulement si ce contrôle tombe.
+- Remediation lever: réactiver la vérification du certificat dans le worker ; renfort de défense en profondeur.
 - Assumptions:
-    - La passerelle reste fonctionnelle dans le scénario central.
-    - L'estimation haute suppose une défaillance simultanée de la passerelle.
+    - Passerelle fonctionnelle dans le scénario central.
+    - Estimation haute = défaillance simultanée de la passerelle.
 
 ## Item: F-08 — Énumération de comptes
-- Range: EUR 10 000 to 200 000 (central estimate EUR 50 000)
-- Reasoning: Faible impact isolé. Coût surtout indirect, comme préparation d'attaques ciblées ; maillon de la Chaîne 2.
+- Range: EUR 0,01 M to 0,2 M (central ~0,05 M)
+- Reasoning: Faible impact isolé. Coût surtout indirect, comme préparation d'attaques ciblées. Maillon de la Chaîne 2.
+- Remediation lever: réponse uniforme et limitation par compte ; retire le point de départ de la Chaîne 2.
 - Assumptions:
     - Pas d'impact direct sans enchaînement.
     - Sensibilité limitée des identités de laboratoire.
 
 ## Item: Chain 1 — Fuite massive de résultats (F-03/09 → F-10 → F-01)
-- Range: EUR 1 500 000 to 9 000 000 (central estimate EUR 4 500 000)
-- Reasoning: Fuite organisée de données de santé sur de nombreux laboratoires. Cumul des quatre moteurs : sanction réglementaire proche du plafond en cas de circonstances aggravantes, notification à grande échelle, perte de clients de 5 % ou plus (1,56 M€+), et surtout risque de suspension de la certification HDS qui menacerait directement l'activité.
+- Range: EUR 1,5 M to 9 M (central ~4–5 M)
+- Reasoning: Fuite organisée de données de santé sur de nombreux laboratoires. Cumul des quatre postes de coût, plus le risque de suspension de la certification HDS, qui menacerait l'activité entière. C'est ce qui place cette chaîne au sommet de la hiérarchie.
+- Remediation lever: corriger F-03/09, F-10 et F-01 ; la correction du maillon racine F-03/09 est la plus efficace.
 - Assumptions:
-    - Exposition multi-laboratoires significative parmi les 400.
-    - Perte de clients de 5 à 10 %.
-    - Risque HDS traité comme un risque de queue à fort impact mais probabilité modérée.
+    - Exposition multi-laboratoires significative.
+    - Départ de 5 à 10 % des laboratoires.
+    - Risque HDS traité comme un risque de queue, à fort impact et probabilité modérée.
     - L'estimation haute inclut une menace sérieuse sur le renouvellement HDS.
 
 ## Item: Chain 2 — Fuite via le support (F-08 → F-02 → F-06)
-- Range: EUR 400 000 to 3 000 000 (central estimate EUR 1 300 000)
-- Reasoning: Trois failles moyennes qui, enchaînées, produisent une fuite réelle de données de santé via un accès support multi-laboratoires et des exports mal expirés. Amende plausible, notification, et perte de clients de 1 à 4 %.
+- Range: EUR 0,4 M to 3 M (central ~1–1,5 M)
+- Reasoning: Trois failles moyennes qui, enchaînées, produisent une fuite réelle via un accès support multi-laboratoires et des exports mal expirés. Se classe au deuxième rang.
+- Remediation lever: corriger F-02 (pivot central) en priorité, puis F-08 et F-06.
 - Assumptions:
     - Accès support à plusieurs laboratoires.
     - Exports exposés contenant des données de santé.
-    - Perte de clients de 1 à 4 %.
+    - Départ de 1 à 4 % des laboratoires.
