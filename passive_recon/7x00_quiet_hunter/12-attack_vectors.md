@@ -3,7 +3,7 @@
 ## Vector 1: Spear-phish of the technical hiring manager via a job-application pretext
 - Entry point: Pieter Janssen, Engineering Manager, who publicly reviews applications for the Security Engineer role.
 - Exploitation scenario: The attacker poses as a candidate for the open Security Engineer position and sends an application email carrying a weaponised "CV.pdf". The message uses the confirmed corporate address format (firstname.lastname@helix-maritime.example) so a reply looks internal, references the exact role wording from the public posting, and is addressed directly to Pieter Janssen, who the posting states welcomes informal questions before applying. Because receiving candidate CVs is this person's normal job, an attachment raises no suspicion. A prior phishing incident at Helix shows staff are a realistic target, and the Security Engineer posting itself confirms email authentication (SPF/DKIM/DMARC) is still being matured.
-- OSINT prerequisites: `7-jobs_notes.md` Finding 3 (hiring manager identified, expects applications); `7-jobs_notes.md` Finding 2 and `2-source_code_notes.md` Finding 3 (stack/version context for a credible lure); `9-employee_notes.md` Findings 1 and 2 (corporate email pattern); `5-press_notes.md` Finding 2 (prior phishing incident confirms realism).
+- OSINT prerequisites: `7-jobs_notes.md` Finding 3; `9-employee_notes.md` Findings 1 and 2; `5-press_notes.md` Finding 2.
 - Probable business impact: initial access on a technology-team endpoint, a foothold adjacent to the Tidewater risk platform and corporate systems, with potential lateral movement into a regulated insurer's environment.
 
 ## Vector 3: Mass credential phishing via a "mailbox migration" pretext
