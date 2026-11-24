@@ -15,5 +15,5 @@
 ## Vector 4: Targeting of the security lead through personal OSINT
 - Entry point: Joris Bakker, Infrastructure & Security Lead, in person.
 - Exploitation scenario: The security lead is linkable to a GPS fitness profile whose runs all start and finish at the Helix office, early each morning before work. This yields a recurring location and time window for a privileged individual. An authorised red team could use this for an in-person pretext near the office at a predictable time, physical surveillance, or a highly personalised phishing lure built on his known interests (running, coffee). The irony — the person responsible for security being the most exposed — makes him a high-value, low-noise target.
-- OSINT prerequisites: `9-employee_notes.md` Finding 1 (security lead identified, email) and Finding 4 (GPS profile, routine, workplace confirmed against `6-registry_notes.md` Finding 1).
+- OSINT prerequisites: `9-employee_notes.md` Finding 1 (security lead identified, email); `9-employee_notes.md` Finding 4 (GPS routine/workplace); `6-registry_notes.md` Finding 1 (workplace confirmation).
 - Probable business impact: compromise of a high-privilege account (infrastructure and security), which would give an attacker broad reach over identity, email and cloud controls across the organisation.
