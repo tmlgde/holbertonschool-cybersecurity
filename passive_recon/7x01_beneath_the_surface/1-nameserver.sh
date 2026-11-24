@@ -1,2 +1,2 @@
 #!/bin/bash
-dig SOA astralis-cloud.example +short | awk '{print $1}' | sed 's/\.$//'
+dig NS astralis-cloud.example +short | sort | head -n1 | sed 's/\.$//'
