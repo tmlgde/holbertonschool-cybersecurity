@@ -1,0 +1,9 @@
+internal
+internal-svc
+backend
+backend-svc
+admin
+admin-svc
+vpn
+api
+gateway
