@@ -1,5 +1,5 @@
 #!/bin/bash
-rubric="ICS MGMT certificate secret breach reputation Year score exposure"
+rubric="ICS MGMT certificate secret breach reputation Year score exposure host"
 d="$(dirname "$0")"
 cerebra_score=0; yume_score=0; verdant_score=0
 [ -s "$d/1-flag.txt" ] && cerebra_score=$((cerebra_score+1))
